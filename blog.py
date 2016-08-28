@@ -1,0 +1,209 @@
+import os
+import re
+import webapp2
+import jinja2
+import hasher
+
+from google.appengine.ext import ndb
+
+template_dir = os.path.join(os.path.dirname(__file__), 'templates')
+jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
+                               autoescape=True)
+# Signup regex checks
+USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+PASS_RE = re.compile(r"^.{3,20}$")
+EMAIL_RE = re.compile(r"^[\S]+@[\S]+.[\S]+$")
+
+
+class Post(ndb.Model):
+    subject = ndb.StringProperty(required=True)
+    content = ndb.TextProperty(required=True)
+    created = ndb.DateTimeProperty(auto_now_add=True)
+
+
+class User(ndb.Model):
+    name = ndb.StringProperty(required=True)
+    pw_hash = ndb.StringProperty(required=True)
+    email = ndb.StringProperty()
+    signup_date = ndb.DateTimeProperty(auto_now_add=True)
+
+    @classmethod
+    def by_id(cls, uid):
+        return cls.get_by_id(uid)
+
+    @classmethod
+    def by_name(cls, name):
+        u = cls.all().filter('name =', name).get()
+        return u
+
+    @classmethod
+    def register(cls, name, pw, email=None):
+        pw_hash = hasher.make_pw_hash(name, pw)
+        return cls(name=name,
+                   pw_hash=pw_hash,
+                   email=email)
+
+    @classmethod
+    def login(cls, name, pw):
+        u = cls.by_name(name)
+        if u and hasher.valid_pw(name, pw, u.pw_hash):
+            return u
+
+
+class BlogHandler(webapp2.RequestHandler):
+    def write(self, *a, **kw):
+        self.response.out.write(*a, **kw)
+
+    def render_str(self, template, **kw):
+        t = jinja_env.get_template(template)
+        return t.render(**kw)
+
+    def render(self, template, **kw):
+        self.write(self.render_str(template, **kw))
+
+    def set_secure_cookie(self, name, val):
+        # Sets a secure value for a cookie and adds to header
+        secure_val = hasher.make_secure_val(val)
+        self.response.headers.add_header(
+            'Set-Cookie',
+            '%s=%s; Path=/' % (name, secure_val))
+
+    def read_secure_cookie(self, name):
+        # Returns original value of a secured cookie val
+        cookie_val = self.request.cookies.get(name)
+        return cookie_val and hasher.check_secure_val(cookie_val)
+
+    def login(self, user):
+        self.set_secure_cookie('user_id', str(user.key.id()))
+
+    def logout(self):
+        self.response.headers.add_header('Set-Cookie', 'user_id=; Path=/')
+
+    def initialize(self, *a, **kw):
+        webapp2.RequestHandler.initialize(self, *a, **kw)
+        uid = self.read_secure_cookie('user_id')
+        self.user = uid and User.by_id(int(uid))
+
+
+class MainPageHandler(BlogHandler):
+    def get(self):
+        # posts = ndb.GqlQuery('SELECT * FROM Post ORDER BY created DESC')
+        posts = Post.query()
+        posts = posts.order(-Post.created)
+        # posts.order = ['-created']
+        posts = posts.fetch(10)
+        self.render('home.html', posts=posts)
+
+
+class ViewPostHandler(BlogHandler):
+    def get(self):
+        post_id = self.request.get('post_id')
+        post = Post.get_by_id(int(post_id))
+        self.render('viewpost.html', post=post)
+
+
+class SignupHandler(BlogHandler):
+    def get(self, username="", email=""):
+        self.render('signup.html')
+
+    def check_uname_avail(self, uname):
+        if User.query(User.name == uname).get():
+            return True
+        else:
+            return False
+
+    def post(self):
+        username = self.request.get('username')
+        password = self.request.get('password')
+        verify = self.request.get('verify')
+        email = self.request.get('email')
+
+        errors = {}
+
+        if not USER_RE.match(username):
+            errors['username_error'] = 'Username does not meet requirements'
+        elif self.check_uname_avail(username):
+            errors['username_error'] = 'Username already exists, try another'
+        if not PASS_RE.match(password):
+            errors['password_error'] = 'Password does not meet requirements'
+        if not password == verify:
+            errors['verify_error'] = 'Passwords do not match'
+        if email and not EMAIL_RE.match(email):
+            errors['email_error'] = 'Email not formatted correctly'
+        if errors:
+            self.render('signup.html', username=username, email=email, **errors)
+        else:
+            u = User.register(username, password, email)
+            u.put()
+            self.login(u)
+            self.redirect('/blog/welcome')
+
+
+class LoginHandler(BlogHandler):
+    def get(self):
+        self.render('login.html')
+
+    def post(self):
+        if self.user:
+            self.redirect('/blog/welcome')
+        else:
+            self.redirect('/blog/signup')
+        # username = self.request.get('username')
+        # password = self.request.get('password')
+        # if username and password:
+        #     user = User.query(User.name == username).get()
+        #     if hasher.check_pass_hash(username, password, user.password):
+        #         cookie = str('user=' + username)
+        #         self.response.headers.add_header('Set-Cookie', cookie)
+        #         self.redirect('/blog/welcome')
+        # errors = {'login_error': 'Incorrect username/password combo',
+        #           'username': username}
+        # self.render('login.html', **errors)
+
+
+class WelcomeHandler(BlogHandler):
+    def get(self):
+        if self.user:  # user instance comes from parent handler's initialize
+            self.render('welcome.html', username=self.user.name)
+        else:
+            self.redirect('/blog/signup')
+
+
+class LogoutHandler(BlogHandler):
+    def get(self):
+        self.response.headers.add_header('Set-Cookie', 'user=')
+        self.redirect('/blog/signup')
+
+
+class NewPostHandler(BlogHandler):
+    def get(self):
+        self.render('newpost.html')
+
+    def post(self):
+        subject = self.request.get('subject')
+        content = self.request.get('content')
+        s_error = ''
+        c_error = ''
+
+        if subject and content:
+            post = Post(subject=subject, content=content)
+            post_key = post.put()
+            post_id = post_key.id()
+            self.redirect('/blog/post?post_id=' + str(post_id))
+        else:
+            if not subject:
+                s_error = "Please include a subject for your submission"
+            if not content:
+                c_error = "Please include content with your submission"
+            self.render('newpost.html',
+                        s_error=s_error, c_error=c_error,
+                        subject=subject, content=content)
+
+app = webapp2.WSGIApplication([('/blog', MainPageHandler),
+                               ('/blog/newpost', NewPostHandler),
+                               ('/blog/post.*', ViewPostHandler),
+                               ('/blog/signup', SignupHandler),
+                               ('/blog/login', LoginHandler),
+                               ('/blog/welcome', WelcomeHandler),
+                               ('/blog/logout', LogoutHandler)
+                               ], debug=True)

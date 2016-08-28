@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Signup{% endblock %}
+{% block header_h2 %}Signup to be an Author on mah blog{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <form class="signup" method="post">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input class="form-control" type="text" name="username" id="username" value="{{ username }}">
+        <div class="error">
+          {{ username_error }}
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input class="form-control" type="password" name="password" id="password" value="">
+        <div class="error">
+          {{ password_error }}
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="verfiy">Retype Password</label>
+        <input class="form-control" type="password" name="verify" id="verify" value="">
+        <div class="error">
+          {{ verify_error }}
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="email">Email (optional)</label>
+        <input class="form-control" type="email" name="email" id="email" value="{{ email }}">
+        <div class="error">
+          {{ email_error }}
+        </div>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary form-control" type="submit" name="submit">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

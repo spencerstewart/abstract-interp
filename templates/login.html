@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+{% block header_h2 %}Login on mah blog{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-6 col-md-offset-3">
+    <form class="login" method="post">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input class="form-control" type="text" name="username" id="username" value="{{ username }}">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input class="form-control" type="password" name="password" id="password" value="">
+      </div>
+      <div class="form-group">
+        <button class="btn btn-primary form-control" type="submit" name="submit">Submit</button>
+      </div>
+      <div class="error">
+        {{ login_error }}
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

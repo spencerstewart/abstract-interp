@@ -14,6 +14,10 @@ from google.appengine.ext import ndb
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
                                autoescape=True)
+
+# Insta access_token
+ACCESS_TOKEN = ''
+
 # Signup regex checks
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 PASS_RE = re.compile(r"^.{3,20}$")
@@ -24,6 +28,10 @@ class Post(ndb.Model):
     subject = ndb.StringProperty(required=True)
     content = ndb.TextProperty(required=True)
     created = ndb.DateTimeProperty(auto_now_add=True)
+
+
+class Config(ndb.Model):
+    access_token = ndb.StringProperty(required=True)
 
 
 class User(ndb.Model):
@@ -86,12 +94,14 @@ class AuthHandler(BaseHandler):
                     payload=form_data,
                     method=urlfetch.POST,
                     headers=headers)
-                self.response.write(result.content)
+                parsed_json = json.loads(result.content)
+                config = Config(access_token=parsed_json['access_token'])
+                config.put()  # Save access_token in db
+                self.redirect('/blog')
             except urlfetch.Error:
                 logging.exception('Caught exception fetching url')
         else:
             self.render('auth_link.html', **self.insta_creds)
-
 
 
 class BlogHandler(BaseHandler):

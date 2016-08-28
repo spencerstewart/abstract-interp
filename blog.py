@@ -3,6 +3,7 @@ import re
 import webapp2
 import jinja2
 import hasher
+import cgi
 
 from google.appengine.ext import ndb
 
@@ -186,6 +187,8 @@ class NewPostHandler(BlogHandler):
         c_error = ''
 
         if subject and content:
+            content = cgi.escape(content)
+            content = content.replace('\n', '<br>')
             post = Post(subject=subject, content=content)
             post_key = post.put()
             post_id = post_key.id()

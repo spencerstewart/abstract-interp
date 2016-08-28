@@ -4,7 +4,11 @@ import webapp2
 import jinja2
 import hasher
 import cgi
+import urllib
+import logging
+import json
 
+from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -51,7 +55,7 @@ class User(ndb.Model):
             return u
 
 
-class BlogHandler(webapp2.RequestHandler):
+class BaseHandler(webapp2.RequestHandler):
     def write(self, *a, **kw):
         self.response.out.write(*a, **kw)
 
@@ -62,6 +66,35 @@ class BlogHandler(webapp2.RequestHandler):
     def render(self, template, **kw):
         self.write(self.render_str(template, **kw))
 
+
+class AuthHandler(BaseHandler):
+    insta_creds = {'client_id': 'c00f51ef61ab4ac8ac543ae906bf4fde',
+                   'redirect_uri': 'http://localhost:8080/blog/auth',  # CHANGE ME!!!
+                   'client_secret': 'e3852dc82ace453bb30d2df7287e148b',
+                   'grant_type': 'authorization_code'}
+
+    def get(self):
+        if self.request.get('code'):
+            self.insta_creds['code'] = str(self.request.get('code'))
+            url = 'https://api.instagram.com/oauth/access_token'
+            code = str(self.request.get('code'))
+            try:
+                form_data = urllib.urlencode(self.insta_creds)
+                headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+                result = urlfetch.fetch(
+                    url=url,
+                    payload=form_data,
+                    method=urlfetch.POST,
+                    headers=headers)
+                self.response.write(result.content)
+            except urlfetch.Error:
+                logging.exception('Caught exception fetching url')
+        else:
+            self.render('auth_link.html', **self.insta_creds)
+
+
+
+class BlogHandler(BaseHandler):
     def set_secure_cookie(self, name, val):
         # Sets a secure value for a cookie and adds to header
         secure_val = hasher.make_secure_val(val)
@@ -208,5 +241,6 @@ app = webapp2.WSGIApplication([('/blog', MainPageHandler),
                                ('/blog/signup', SignupHandler),
                                ('/blog/login', LoginHandler),
                                ('/blog/welcome', WelcomeHandler),
-                               ('/blog/logout', LogoutHandler)
+                               ('/blog/logout', LogoutHandler),
+                               ('/blog/auth', AuthHandler)
                                ], debug=True)

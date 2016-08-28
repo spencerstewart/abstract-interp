@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Auth for Insta{% endblock %}
+
+{% block header_h2 %}
+  Authorize instagram, foo!
+{% endblock %}
+
+{% block content %}
+<div class="row body">
+    <div class="col-md-6 col-md-offset-3 post">
+      <div class="">
+        <a href="https://api.instagram.com/oauth/authorize/?client_id={{client_id}}&redirect_uri={{redirect_uri}}&response_type=code">
+          <button class="btn btn-primary">
+            Authorize it. Right. Now.
+          </button>
+        </a>
+      </div>
+    </div>
+</div>
+{% endblock %}

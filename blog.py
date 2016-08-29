@@ -31,6 +31,7 @@ EMAIL_RE = re.compile(r"^[\S]+@[\S]+.[\S]+$")
 class Post(ndb.Model):
     subject = ndb.StringProperty(required=True)
     content = ndb.TextProperty(required=True)
+    img_url = ndb.StringProperty(required=True)
     created = ndb.DateTimeProperty(auto_now_add=True)
 
 
@@ -257,13 +258,14 @@ class NewPostHandler(BlogHandler):
     def post(self):
         subject = self.request.get('subject')
         content = self.request.get('content')
+        img_url = self.request.get('img_url')
         s_error = ''
         c_error = ''
 
-        if subject and content:
+        if subject and content and img_url:
             content = cgi.escape(content)
             content = content.replace('\n', '<br>')
-            post = Post(subject=subject, content=content)
+            post = Post(subject=subject, content=content, img_url=img_url)
             post_key = post.put()
             post_id = post_key.id()
             self.redirect('/blog/post?post_id=' + str(post_id))
@@ -274,7 +276,8 @@ class NewPostHandler(BlogHandler):
                 c_error = "Please include content with your submission"
             self.render('newpost.html',
                         s_error=s_error, c_error=c_error,
-                        subject=subject, content=content)
+                        subject=subject, content=content,
+                        img_url=img_url)
 
 app = webapp2.WSGIApplication([('/blog', MainPageHandler),
                                ('/blog/newpost', NewPostHandler),

@@ -5,8 +5,10 @@ import jinja2
 import hasher
 import cgi
 import urllib
+import urllib2
 import logging
 import json
+import random
 
 from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
@@ -22,6 +24,8 @@ ACCESS_TOKEN = ''
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
 PASS_RE = re.compile(r"^.{3,20}$")
 EMAIL_RE = re.compile(r"^[\S]+@[\S]+.[\S]+$")
+
+# Database Classes
 
 
 class Post(ndb.Model):
@@ -61,6 +65,8 @@ class User(ndb.Model):
         u = cls.by_name(name)
         if u and hasher.valid_pw(name, pw, u.pw_hash):
             return u
+
+# Handlers
 
 
 class BaseHandler(webapp2.RequestHandler):
@@ -127,6 +133,29 @@ class BlogHandler(BaseHandler):
         webapp2.RequestHandler.initialize(self, *a, **kw)
         uid = self.read_secure_cookie('user_id')
         self.user = uid and User.by_id(int(uid))
+
+
+class InstaAPI(object):
+    @classmethod
+    def get_access_token(cls):
+        config = list(Config.query().fetch(limit=1))[0]
+        return config.access_token
+
+    @classmethod
+    def get_rand_image_url(cls):
+        """ Gets a random image from 20 most recent
+
+            # Future Endpoint:
+            # https://api.instagram.com/v1/tags/
+            # {tag-name}/media/recent?access_token=ACCESS-TOKEN """
+        endpoint = 'https://api.instagram.com/v1/users/self/media/recent/?access_token='
+        # fetchs Insta API access_token
+        url = endpoint + cls.get_access_token()
+        response = urllib2.urlopen(url)
+        data = json.load(response)
+        random_pic_num = random.randint(0, 19)
+        return data['data'][random_pic_num]['images']['standard_resolution']['url']
+        # https://api.instagram.com/v1/users/self/media/recent/?access_token=208185193.c00f51e.3dc02da58c7f4bb2a194192475291671
 
 
 class MainPageHandler(BlogHandler):
@@ -221,7 +250,9 @@ class LogoutHandler(BlogHandler):
 
 class NewPostHandler(BlogHandler):
     def get(self):
-        self.render('newpost.html')
+        # self.render('newpost.html', get_insta_image())
+        img_url = InstaAPI.get_rand_image_url()
+        self.render('newpost.html', img_url=img_url)
 
     def post(self):
         subject = self.request.get('subject')
@@ -252,5 +283,5 @@ app = webapp2.WSGIApplication([('/blog', MainPageHandler),
                                ('/blog/login', LoginHandler),
                                ('/blog/welcome', WelcomeHandler),
                                ('/blog/logout', LogoutHandler),
-                               ('/blog/auth', AuthHandler)
+                               ('/blog/auth', AuthHandler),
                                ], debug=True)

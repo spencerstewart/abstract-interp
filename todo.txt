@@ -1,2 +1,0 @@
-Make more efficient requests to instagram: do some eager-loading stuff.
-Make a secure method to pass img_url between GET /blog/newpost and POST /blog/newpost so that someone can't alter the hidden input and substitute a diff img_url

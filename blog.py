@@ -49,7 +49,7 @@ class User(ndb.Model):
 
     @classmethod
     def by_name(cls, name):
-        u = cls.all().filter('name =', name).get()
+        u = cls.query().filter(cls.name == name).get()
         return u
 
     @classmethod
@@ -163,13 +163,15 @@ class InstaAPI(object):
 
 class MainPageHandler(BlogHandler):
     def get(self):
-        # posts = ndb.GqlQuery('SELECT * FROM Post ORDER BY created DESC')
         posts = Post.query()
         posts = posts.order(-Post.created)
-        # posts.order = ['-created']
         posts = posts.fetch(10)
         # self.write(self.logged_in())
-        self.render('home.html', posts=posts)
+        name = ""
+        if self.user:
+            name = self.user.name
+
+        self.render('home.html', posts=posts, user_name=name)
 
 
 class ViewPostHandler(BlogHandler):
@@ -221,21 +223,17 @@ class LoginHandler(BlogHandler):
         self.render('login.html')
 
     def post(self):
-        if self.user:
-            self.redirect('/blog/welcome')
-        else:
-            self.redirect('/blog/signup')
-        # username = self.request.get('username')
-        # password = self.request.get('password')
-        # if username and password:
-        #     user = User.query(User.name == username).get()
-        #     if hasher.check_pass_hash(username, password, user.password):
-        #         cookie = str('user=' + username)
-        #         self.response.headers.add_header('Set-Cookie', cookie)
-        #         self.redirect('/blog/welcome')
-        # errors = {'login_error': 'Incorrect username/password combo',
-        #           'username': username}
-        # self.render('login.html', **errors)
+        username = self.request.get('username')
+        password = self.request.get('password')
+        if username and password:
+            u = User.login(username, password)
+            if u:
+                self.login(u)
+                self.redirect('/blog')
+        errors = {'login_error': 'Incorrect username/password combo',
+                  'username': username}
+        self.render('login.html', **errors)
+
 
 
 class WelcomeHandler(BlogHandler):
@@ -248,7 +246,7 @@ class WelcomeHandler(BlogHandler):
 
 class LogoutHandler(BlogHandler):
     def get(self):
-        self.response.headers.add_header('Set-Cookie', 'user=')
+        self.logout()
         self.redirect('/blog/signup')
 
 

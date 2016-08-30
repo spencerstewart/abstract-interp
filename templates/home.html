@@ -5,7 +5,7 @@
 {% block header_h2 %}
 {% endblock %}
 
-{% block sidebar_desc %}
+{% block sidebar %}
     <p class="subtitle">
       Receive an abstract photo.<br><a href="/blog/newpost">
       Share your raw interpretation. </a>
@@ -22,7 +22,7 @@
             <img class="img-responsive" src="{{ post.img_url }}" alt="An abstract Instagram photo" />
           </div>
         </a>
-        <a href="/blog/post?post_id={{ post.subject }}">
+        <a href="/blog/post?post_id={{ post.key.id() }}">
           <div class="subject">
             {{ post.subject }}
           </div>

@@ -39,18 +39,6 @@
         margin-bottom: 4em;
       }
 
-      #sidebar {
-        overflow-y: auto;
-        max-height: 100%;
-      }
-
-      .sidebar-user {
-        margin: 1em;
-        padding: .5em;
-        border-top: 1px solid #888;
-        width: calc(100% - 2em);
-      }
-
       @media (max-width: 992px){
         #sidebar {
           position: static;
@@ -62,36 +50,20 @@
   </head>
   <body>
     <div class="container">
-      <div class="col-md-3 col-md-offset-6 affix" id="sidebar">
-        <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+        <div class="row text-center">
           <div class="col-md-12 title">
             <a href="/blog"><h1>Abstract Interpretations</h1></a>
           </div>
-        </div>
-        <div class="row text-right">
           <div class="col-md-12 header">
             <h2>{% block header_h2 %}{% endblock %}</h2>
           </div>
           <div class="col-md-12 sidebar-desc">
-            {% block sidebar %}{% endblock %}
-          </div>
-          <div class="col-md-12 sidebar-user">
-            {% block sidebar_user %}{% endblock %}
-            {% if user_name %}
-              Logged in as {{ user_name }}.
-              <br><a href="/blog/logout">Logout.</a>
-            {% else %}
-              <p>
-                <a href="/blog/login">Login</a>
-              </p>
-              <p>
-                <a href="/blog/signup">Sign up</a>
-              </p>
-            {% endif %}
+            {% block sidebar_desc %}{% endblock %}
           </div>
         </div>
       </div>
-      <div class="col-md-6 col-md-offset-1 content">
+      <div class="col-md-12 content">
       {% block content %}
       {% endblock %}
       </div>

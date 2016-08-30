@@ -17,12 +17,16 @@
 {% block content %}
     {% for post in posts %}
       <div class="col-md-12 post">
-        <div class="insta_img">
-          <img class="img-responsive" src="{{ post.img_url }}" alt="An abstract Instagram photo" />
-        </div>
-        <div class="subject">
-          {{ post.subject }}
-        </div>
+        <a href="/blog/post?post_id={{ post.key.id() }}">
+          <div class="insta_img">
+            <img class="img-responsive" src="{{ post.img_url }}" alt="An abstract Instagram photo" />
+          </div>
+        </a>
+        <a href="/blog/post?post_id={{ post.subject }}">
+          <div class="subject">
+            {{ post.subject }}
+          </div>
+        </a>
         <div class="content">
           {{ post.content | safe }}
         </div>

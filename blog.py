@@ -17,8 +17,6 @@ template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
                                autoescape=True)
 
-# Insta access_token
-ACCESS_TOKEN = ''
 
 # Signup regex checks
 USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
@@ -135,6 +133,10 @@ class BlogHandler(BaseHandler):
         uid = self.read_secure_cookie('user_id')
         self.user = uid and User.by_id(int(uid))
 
+    def logged_in(self):
+        if self.user:
+            return self.user.name
+
 
 class InstaAPI(object):
     @classmethod
@@ -166,6 +168,7 @@ class MainPageHandler(BlogHandler):
         posts = posts.order(-Post.created)
         # posts.order = ['-created']
         posts = posts.fetch(10)
+        # self.write(self.logged_in())
         self.render('home.html', posts=posts)
 
 

@@ -22,22 +22,49 @@
         text-align: center;
         border-bottom: 2px solid #999;
       }
+
+      .subtitle {
+        font-size: 1.5em;
+      }
+
+      .post-container {
+        margin-top: 2em;
+      }
+
+      .post {
+        margin-bottom: 4em;
+      }
+
+      @media (max-width: 992px){
+        #sidebar {
+          position: static;
+          width: 100%;
+          margin-bottom: 2em;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="container">
-      <div class="row">
-        <div class="col-md-6 col-md-offset-3 title">
-          <a href="/blog"><h1>Abstract Interpretations</h1></a>
+      <div class="col-md-3 col-md-offset-1 affix" id="sidebar">
+        <div class="row">
+          <div class="col-md-12 title">
+            <a href="/blog"><h1>Abstract Interpretations</h1></a>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 header">
+            <h2>{% block header_h2 %}{% endblock %}</h2>
+          </div>
+          <div class="col-md-12 sidebar-desc">
+            {% block sidebar_desc %}{% endblock %}
+          </div>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-6 col-md-offset-3 header">
-          <h2>{% block header_h2 %}{% endblock %}</h2>
-        </div>
-      </div>
+      <div class="col-md-6 col-md-offset-5 post-container">
       {% block content %}
       {% endblock %}
+      </div>
     </div>
   </body>
 </html>

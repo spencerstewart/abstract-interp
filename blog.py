@@ -168,7 +168,7 @@ class MainPageHandler(BlogHandler):
         posts = posts.fetch(10)
         # self.write(self.logged_in())
         name = ""
-        if self.user:
+        if self.user:  # Takes from BlogHandler initialize. Is there a better way?
             name = self.user.name
 
         self.render('home.html', posts=posts, user_name=name)
@@ -178,7 +178,10 @@ class ViewPostHandler(BlogHandler):
     def get(self):
         post_id = self.request.get('post_id')
         post = Post.get_by_id(int(post_id))
-        self.render('viewpost.html', post=post)
+        name = ""
+        if self.user:  # Takes from BlogHandler initialize. Is there a better way?
+            name = self.user.name
+        self.render('viewpost.html', post=post, user_name=name)
 
 
 class SignupHandler(BlogHandler):
@@ -260,7 +263,11 @@ class NewPostHandler(BlogHandler):
     def get(self):
         # self.render('newpost.html', get_insta_image())
         img_url = InstaAPI.get_rand_image_url()
-        self.render('newpost.html', img_url=img_url)
+        name = ""
+        if self.user:  # Takes from BlogHandler initialize. Is there a better way?
+            name = self.user.name
+        self.render('newpost.html', img_url=img_url, user_name=name)
+
 
     def post(self):
         subject = self.request.get('subject')

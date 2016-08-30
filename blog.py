@@ -183,7 +183,10 @@ class ViewPostHandler(BlogHandler):
 
 class SignupHandler(BlogHandler):
     def get(self, username="", email=""):
-        self.render('signup.html')
+        if self.user:
+            self.redirect('/blog')
+        else:
+            self.render('signup.html')
 
     def check_uname_avail(self, uname):
         if User.query(User.name == uname).get():
@@ -220,7 +223,10 @@ class SignupHandler(BlogHandler):
 
 class LoginHandler(BlogHandler):
     def get(self):
-        self.render('login.html')
+        if self.user:
+            self.redirect('/blog')
+        else:
+            self.render('login.html')
 
     def post(self):
         username = self.request.get('username')

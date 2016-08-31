@@ -34,6 +34,7 @@
           <form class="" action="/blog/like" method="post">
             <button class="btn btn-primary" type="submit" name="liked" value="{{ post.key.id() }}">Like</button>
           </form>
+          <span>{{ post.like_count }}</span>
         </div>
       </div>
     {% endfor %}

@@ -260,19 +260,42 @@ def likes_key(name='default'):
 class Likes(ndb.Model):
     """ NDB Model for likes """
     user = ndb.StringProperty(required=True)
+    # post = ndb.IntegerProperty(required=True)
 
 
 class LikeHandler(BlogHandler):
+
+    def like(self, post):  # Would be good to make this transactional
+        like = Likes(user=self.user.name,
+                    #  post=post.key.id(),
+                     parent=post.key)
+        like.put()
+        like_count = Likes.query(ancestor=post.key).count(limit=1000)
+        post.like_count = like_count
+        post.put()
+
+    def already_liked(self, post):
+        user_likes = Likes.query(ancestor=post.key, projection=[Likes.user])
+        user_likes = user_likes.fetch()
+        for user_like in user_likes:
+            if self.user.name == user_like.user:
+                self.write('You have already liked this')
+                return True
+            else:
+                return False
+
     def post(self):
         if self.user:
             post_id = self.request.get('liked')
             post = Post.get_by_id(int(post_id), parent=blog_key())
-
-            like = Likes(user=self.user.name, parent=post.key)
-            like.put()
-            self.write('you are logged in and liked this')
+            if not self.already_liked(post):
+                self.like(post)
+                self.write('total likes are now %s' % str(post.like_count))
+                self.write('you are logged in and liked this')
+            else:
+                pass
         else:
-            self.write('you are not logged in and liked this')
+            self.write('you must log in to like this')
 
 
 # Post stuff
@@ -285,7 +308,7 @@ class Post(ndb.Model):
     content = ndb.TextProperty(required=True)
     img_url = ndb.StringProperty(required=True)
     author = ndb.StringProperty(required=True)
-    likes = ndb.IntegerProperty()
+    like_count = ndb.IntegerProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
 
 
@@ -310,7 +333,7 @@ class NewPostHandler(BlogHandler):
             content = content.replace('\n', '<br>')
             author = str(self.user.name)
             post = Post(parent=blog_key(), subject=subject, content=content,
-                        author=author, img_url=img_url)
+                        author=author, img_url=img_url, like_count='0')
             post_key = post.put()
             post_id = post_key.id()
             self.redirect('/blog/post?post_id=' + str(post_id))

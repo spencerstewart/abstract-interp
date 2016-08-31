@@ -180,9 +180,21 @@ class ViewPostHandler(BlogHandler):
         post_id = self.request.get('post_id')
         post = Post.get_by_id(int(post_id))
         name = ""
-        if self.user:  # Takes from BlogHandler initialize. Is there a better way to provide this across pages?
+        author = ""
+        if self.user:
             name = self.user.name
-        self.render('viewpost.html', post=post, user_name=name)
+            if name == post.author:
+                author = post.author
+                cookie_val = self.read_secure_cookie('user_id')
+        self.render('viewpost.html', post=post,
+                    user_name=name, author=author,
+                    cookie_val=cookie_val)
+
+    def post(self):
+        if self.request.get('edit'):
+            self.redirect('/blog/newpost')
+        if self.request.get('delete'):
+            self.write('delete me!')
 
 
 class SignupHandler(BlogHandler):

@@ -21,5 +21,13 @@
         <img class="img-responsive" src="{{ post.img_url }}" alt="An abstract Instagram photo" />
       </div>
     </div>
+    <div class="col-md-12">
+      {% if author %}
+      <form method="post">
+        <button type="submit" name="edit" value="{{ cookie_val }}">Edit</button>
+        <button type="submit" name="delete" value="{{ cookie_val }}">Delete</button>
+      </form>}
+      {% endif %}
+    </div>
 </div>
 {% endblock %}

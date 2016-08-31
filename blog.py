@@ -84,6 +84,8 @@ class BaseHandler(webapp2.RequestHandler):
 class AuthHandler(BaseHandler):
     insta_creds = {'client_id': 'c00f51ef61ab4ac8ac543ae906bf4fde',
                    'redirect_uri': 'http://localhost:8080/blog/auth',  # CHANGE ME!!!
+                   # use https://abstract-interp.appspot.com/blog/auth for prod
+                   # use http://localhost:8080/blog/auth for dev
                    'client_secret': 'e3852dc82ace453bb30d2df7287e148b',
                    'grant_type': 'authorization_code'}
 
@@ -185,16 +187,43 @@ class ViewPostHandler(BlogHandler):
             name = self.user.name
             if name == post.author:
                 author = post.author
-                cookie_val = self.read_secure_cookie('user_id')
         self.render('viewpost.html', post=post,
-                    user_name=name, author=author,
-                    cookie_val=cookie_val)
+                    user_name=name, author=author,)
 
-    def post(self):
-        if self.request.get('edit'):
-            self.redirect('/blog/newpost')
-        if self.request.get('delete'):
-            self.write('delete me!')
+
+class EditPostHandler(BlogHandler):
+        def get(self):
+            self.redirect('/blog')
+
+        def post(self):
+            if self.request.get('edit'):
+                post_id = self.request.get('edit')
+                post = Post.get_by_id(int(post_id))
+                name = ""
+                author = ""
+                if self.user:
+                    name = self.user.name
+                    if name == post.author:
+                        author = post.author
+                        post.content = post.content.replace('<br>', '') # remove <br>s
+                        self.render('editpost.html', post=post)
+                    else:
+                        self.redirect('/blog')
+            elif self.request.get('delete'):
+                post_id = self.request.get('delete')
+                post = Post.get_by_id(int(post_id))
+                post.key.delete()
+                self.redirect('/blog')
+            elif self.request.get('update'):
+                post_id = self.request.get('update')
+                post = Post.get_by_id(int(post_id))
+                subject = self.request.get('subject')
+                content = self.request.get('content')
+                post.subject = subject
+                post.content = content
+                post.put()
+                self.redirect('/blog')
+
 
 
 class SignupHandler(BlogHandler):
@@ -310,6 +339,7 @@ class NewPostHandler(BlogHandler):
 
 app = webapp2.WSGIApplication([('/blog', MainPageHandler),
                                ('/blog/newpost', NewPostHandler),
+                               ('/blog/edit', EditPostHandler),
                                ('/blog/post.*', ViewPostHandler),
                                ('/blog/signup', SignupHandler),
                                ('/blog/login', LoginHandler),

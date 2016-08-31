@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}New Post{% endblock %}
+{% block title %}View Post{% endblock %}
 
 {% block header_h2 %}
 {% endblock %}
@@ -23,10 +23,10 @@
     </div>
     <div class="col-md-12">
       {% if author %}
-      <form method="post">
-        <button type="submit" name="edit" value="{{ cookie_val }}">Edit</button>
-        <button type="submit" name="delete" value="{{ cookie_val }}">Delete</button>
-      </form>}
+      <form method="post" action="/blog/edit">
+        <button type="submit" name="edit" value="{{ post.key.id() }}">Edit</button>
+        <button type="submit" name="delete" value="{{ post.key.id() }}">Delete</button>
+      </form>
       {% endif %}
     </div>
 </div>

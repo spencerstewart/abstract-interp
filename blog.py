@@ -30,6 +30,7 @@ class Post(ndb.Model):
     subject = ndb.StringProperty(required=True)
     content = ndb.TextProperty(required=True)
     img_url = ndb.StringProperty(required=True)
+    author = ndb.StringProperty(required=True)
     created = ndb.DateTimeProperty(auto_now_add=True)
 
 
@@ -179,7 +180,7 @@ class ViewPostHandler(BlogHandler):
         post_id = self.request.get('post_id')
         post = Post.get_by_id(int(post_id))
         name = ""
-        if self.user:  # Takes from BlogHandler initialize. Is there a better way?
+        if self.user:  # Takes from BlogHandler initialize. Is there a better way to provide this across pages?
             name = self.user.name
         self.render('viewpost.html', post=post, user_name=name)
 
@@ -279,7 +280,9 @@ class NewPostHandler(BlogHandler):
         if subject and content and img_url:
             content = cgi.escape(content)
             content = content.replace('\n', '<br>')
-            post = Post(subject=subject, content=content, img_url=img_url)
+            author = str(self.user.name)
+            post = Post(subject=subject, content=content,
+                        author=author, img_url=img_url)
             post_key = post.put()
             post_id = post_key.id()
             self.redirect('/blog/post?post_id=' + str(post_id))

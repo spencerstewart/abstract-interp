@@ -26,45 +26,9 @@ EMAIL_RE = re.compile(r"^[\S]+@[\S]+.[\S]+$")
 # Database Classes
 
 
-class Post(ndb.Model):
-    subject = ndb.StringProperty(required=True)
-    content = ndb.TextProperty(required=True)
-    img_url = ndb.StringProperty(required=True)
-    author = ndb.StringProperty(required=True)
-    created = ndb.DateTimeProperty(auto_now_add=True)
-
-
 class Config(ndb.Model):
     access_token = ndb.StringProperty(required=True)
 
-
-class User(ndb.Model):
-    name = ndb.StringProperty(required=True)
-    pw_hash = ndb.StringProperty(required=True)
-    email = ndb.StringProperty()
-    signup_date = ndb.DateTimeProperty(auto_now_add=True)
-
-    @classmethod
-    def by_id(cls, uid):
-        return cls.get_by_id(uid)
-
-    @classmethod
-    def by_name(cls, name):
-        u = cls.query().filter(cls.name == name).get()
-        return u
-
-    @classmethod
-    def register(cls, name, pw, email=None):
-        pw_hash = hasher.make_pw_hash(name, pw)
-        return cls(name=name,
-                   pw_hash=pw_hash,
-                   email=email)
-
-    @classmethod
-    def login(cls, name, pw):
-        u = cls.by_name(name)
-        if u and hasher.valid_pw(name, pw, u.pw_hash):
-            return u
 
 # Handlers
 
@@ -169,7 +133,6 @@ class MainPageHandler(BlogHandler):
         posts = Post.query()
         posts = posts.order(-Post.created)
         posts = posts.fetch(10)
-        # self.write(self.logged_in())
         name = ""
         if self.user:  # Takes from BlogHandler initialize. Is there a better way?
             name = self.user.name
@@ -177,53 +140,36 @@ class MainPageHandler(BlogHandler):
         self.render('home.html', posts=posts, user_name=name)
 
 
-class ViewPostHandler(BlogHandler):
-    def get(self):
-        post_id = self.request.get('post_id')
-        post = Post.get_by_id(int(post_id))
-        name = ""
-        author = ""
-        if self.user:
-            name = self.user.name
-            if name == post.author:
-                author = post.author
-        self.render('viewpost.html', post=post,
-                    user_name=name, author=author,)
+# Users Code
 
 
-class EditPostHandler(BlogHandler):
-        def get(self):
-            self.redirect('/blog')
+class User(ndb.Model):
+    name = ndb.StringProperty(required=True)
+    pw_hash = ndb.StringProperty(required=True)
+    email = ndb.StringProperty()
+    signup_date = ndb.DateTimeProperty(auto_now_add=True)
 
-        def post(self):
-            if self.request.get('edit'):
-                post_id = self.request.get('edit')
-                post = Post.get_by_id(int(post_id))
-                name = ""
-                author = ""
-                if self.user:
-                    name = self.user.name
-                    if name == post.author:
-                        author = post.author
-                        post.content = post.content.replace('<br>', '') # remove <br>s
-                        self.render('editpost.html', post=post)
-                    else:
-                        self.redirect('/blog')
-            elif self.request.get('delete'):
-                post_id = self.request.get('delete')
-                post = Post.get_by_id(int(post_id))
-                post.key.delete()
-                self.redirect('/blog')
-            elif self.request.get('update'):
-                post_id = self.request.get('update')
-                post = Post.get_by_id(int(post_id))
-                subject = self.request.get('subject')
-                content = self.request.get('content')
-                post.subject = subject
-                post.content = content
-                post.put()
-                self.redirect('/blog')
+    @classmethod
+    def by_id(cls, uid):
+        return cls.get_by_id(uid)
 
+    @classmethod
+    def by_name(cls, name):
+        u = cls.query().filter(cls.name == name).get()
+        return u
+
+    @classmethod
+    def register(cls, name, pw, email=None):
+        pw_hash = hasher.make_pw_hash(name, pw)
+        return cls(name=name,
+                   pw_hash=pw_hash,
+                   email=email)
+
+    @classmethod
+    def login(cls, name, pw):
+        u = cls.by_name(name)
+        if u and hasher.valid_pw(name, pw, u.pw_hash):
+            return u
 
 
 class SignupHandler(BlogHandler):
@@ -266,6 +212,14 @@ class SignupHandler(BlogHandler):
             self.redirect('/blog/welcome')
 
 
+class WelcomeHandler(BlogHandler):  # Only redirected here after signup
+    def get(self):
+        if self.user:  # user instance comes from parent handler's initialize
+            self.render('welcome.html', username=self.user.name)
+        else:
+            self.redirect('/blog/signup')
+
+
 class LoginHandler(BlogHandler):
     def get(self):
         if self.user:
@@ -286,19 +240,23 @@ class LoginHandler(BlogHandler):
         self.render('login.html', **errors)
 
 
-
-class WelcomeHandler(BlogHandler):
-    def get(self):
-        if self.user:  # user instance comes from parent handler's initialize
-            self.render('welcome.html', username=self.user.name)
-        else:
-            self.redirect('/blog/signup')
-
-
 class LogoutHandler(BlogHandler):
     def get(self):
         self.logout()
         self.redirect('/blog/signup')
+
+
+# Post stuff
+def blog_key(name='default'):
+    return ndb.Key('blogs', name)
+
+
+class Post(ndb.Model):
+    subject = ndb.StringProperty(required=True)
+    content = ndb.TextProperty(required=True)
+    img_url = ndb.StringProperty(required=True)
+    author = ndb.StringProperty(required=True)
+    created = ndb.DateTimeProperty(auto_now_add=True)
 
 
 class NewPostHandler(BlogHandler):
@@ -309,7 +267,6 @@ class NewPostHandler(BlogHandler):
         if self.user:  # Takes from BlogHandler initialize. Is there a better way?
             name = self.user.name
         self.render('newpost.html', img_url=img_url, user_name=name)
-
 
     def post(self):
         subject = self.request.get('subject')
@@ -322,7 +279,7 @@ class NewPostHandler(BlogHandler):
             content = cgi.escape(content)
             content = content.replace('\n', '<br>')
             author = str(self.user.name)
-            post = Post(subject=subject, content=content,
+            post = Post(parent=blog_key(), subject=subject, content=content,
                         author=author, img_url=img_url)
             post_key = post.put()
             post_id = post_key.id()
@@ -336,6 +293,54 @@ class NewPostHandler(BlogHandler):
                         s_error=s_error, c_error=c_error,
                         subject=subject, content=content,
                         img_url=img_url)
+
+
+class ViewPostHandler(BlogHandler):
+    def get(self):
+        post_id = self.request.get('post_id')
+        post = Post.get_by_id(int(post_id), parent=blog_key())
+        name = ""
+        author = ""
+        if self.user:
+            name = self.user.name
+            if name == post.author:
+                author = post.author
+        self.render('viewpost.html', post=post,
+                    user_name=name, author=author,)
+
+
+class EditPostHandler(BlogHandler):
+        def get(self):
+            self.redirect('/blog')
+
+        def post(self):
+            if self.request.get('edit'):
+                post_id = self.request.get('edit')
+                post = Post.get_by_id(int(post_id), parent=blog_key())
+                name = ""
+                author = ""
+                if self.user:
+                    name = self.user.name
+                    if name == post.author:
+                        author = post.author
+                        post.content = post.content.replace('<br>', '')  # remove <br>s
+                        self.render('editpost.html', post=post)
+                    else:
+                        self.redirect('/blog')
+            elif self.request.get('delete'):
+                post_id = self.request.get('delete')
+                post = Post.get_by_id(int(post_id), parent=blog_key())
+                post.key.delete()
+                self.redirect('/blog')
+            elif self.request.get('update'):
+                post_id = self.request.get('update')
+                post = Post.get_by_id(int(post_id), parent=blog_key())
+                subject = self.request.get('subject')
+                content = self.request.get('content')
+                post.subject = subject
+                post.content = content
+                post.put()
+                self.redirect('/blog')
 
 app = webapp2.WSGIApplication([('/blog', MainPageHandler),
                                ('/blog/newpost', NewPostHandler),

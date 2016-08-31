@@ -18,12 +18,7 @@ jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
                                autoescape=True)
 
 
-# Signup regex checks
-USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
-PASS_RE = re.compile(r"^.{3,20}$")
-EMAIL_RE = re.compile(r"^[\S]+@[\S]+.[\S]+$")
-
-# Database Classes
+# General Database Classes
 
 
 class Config(ndb.Model):
@@ -143,6 +138,16 @@ class MainPageHandler(BlogHandler):
 # Users Code
 
 
+def users_key(group='default'):
+    return ndb.Key('users', group)
+
+
+# Signup regex checks
+USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+PASS_RE = re.compile(r"^.{3,20}$")
+EMAIL_RE = re.compile(r"^[\S]+@[\S]+.[\S]+$")
+
+
 class User(ndb.Model):
     name = ndb.StringProperty(required=True)
     pw_hash = ndb.StringProperty(required=True)
@@ -151,7 +156,7 @@ class User(ndb.Model):
 
     @classmethod
     def by_id(cls, uid):
-        return cls.get_by_id(uid)
+        return cls.get_by_id(uid, parent=users_key())
 
     @classmethod
     def by_name(cls, name):
@@ -161,7 +166,8 @@ class User(ndb.Model):
     @classmethod
     def register(cls, name, pw, email=None):
         pw_hash = hasher.make_pw_hash(name, pw)
-        return cls(name=name,
+        return cls(parent=users_key(),
+                   name=name,
                    pw_hash=pw_hash,
                    email=email)
 
@@ -246,6 +252,29 @@ class LogoutHandler(BlogHandler):
         self.redirect('/blog/signup')
 
 
+# Likes stuff
+def likes_key(name='default'):
+    return ndb.Key('likes', name)
+
+
+class Likes(ndb.Model):
+    """ NDB Model for likes """
+    user = ndb.StringProperty(required=True)
+
+
+class LikeHandler(BlogHandler):
+    def post(self):
+        if self.user:
+            post_id = self.request.get('liked')
+            post = Post.get_by_id(int(post_id), parent=blog_key())
+
+            like = Likes(user=self.user.name, parent=post.key)
+            like.put()
+            self.write('you are logged in and liked this')
+        else:
+            self.write('you are not logged in and liked this')
+
+
 # Post stuff
 def blog_key(name='default'):
     return ndb.Key('blogs', name)
@@ -256,6 +285,7 @@ class Post(ndb.Model):
     content = ndb.TextProperty(required=True)
     img_url = ndb.StringProperty(required=True)
     author = ndb.StringProperty(required=True)
+    likes = ndb.IntegerProperty()
     created = ndb.DateTimeProperty(auto_now_add=True)
 
 
@@ -303,7 +333,7 @@ class ViewPostHandler(BlogHandler):
         author = ""
         if self.user:
             name = self.user.name
-            if name == post.author:
+            if post.author and name == post.author:
                 author = post.author
         self.render('viewpost.html', post=post,
                     user_name=name, author=author,)
@@ -346,6 +376,7 @@ app = webapp2.WSGIApplication([('/blog', MainPageHandler),
                                ('/blog/newpost', NewPostHandler),
                                ('/blog/edit', EditPostHandler),
                                ('/blog/post.*', ViewPostHandler),
+                               ('/blog/like', LikeHandler),
                                ('/blog/signup', SignupHandler),
                                ('/blog/login', LoginHandler),
                                ('/blog/welcome', WelcomeHandler),

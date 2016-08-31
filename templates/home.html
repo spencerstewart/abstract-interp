@@ -30,6 +30,11 @@
         <div class="content">
           {{ post.content | safe }}
         </div>
+        <div class="like">
+          <form class="" action="/blog/like" method="post">
+            <button class="btn btn-primary" type="submit" name="liked" value="{{ post.key.id() }}">Like</button>
+          </form>
+        </div>
       </div>
     {% endfor %}
 {% endblock %}

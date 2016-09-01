@@ -253,42 +253,27 @@ class LogoutHandler(BlogHandler):
 
 
 # Likes stuff
-def likes_key(name='default'):
-    return ndb.Key('likes', name)
-
-
-class Likes(ndb.Model):
-    """ NDB Model for likes """
-    user = ndb.StringProperty(required=True)
-    # post = ndb.IntegerProperty(required=True)
-
-
 class LikeHandler(BlogHandler):
-
-    def like(self, post):  # Would be good to make this transactional
-        like = Likes(user=self.user.name,
-                    #  post=post.key.id(),
-                     parent=post.key)
-        like.put()
-        like_count = Likes.query(ancestor=post.key).count(limit=1000)
-        post.like_count = like_count
+    def like(self, post):
+        post.likes.append(str(self.user.name))
+        post.like_count = len(post.likes)
         post.put()
 
     def already_liked(self, post):
-        user_likes = Likes.query(ancestor=post.key, projection=[Likes.user])
-        user_likes = user_likes.fetch()
-        result = False
-        for user_like in user_likes:
-            if self.user.name == user_like.user:
+        if post.likes:
+            who_liked = post.likes
+            if self.user.name in who_liked:
                 return True
             else:
-                pass
-        return result
+                return False
+        else:
+            return False
 
     def post(self):
         if self.user:
             post_id = self.request.get('liked')
             post = Post.get_by_id(int(post_id), parent=blog_key())
+            # self.already_liked(post)
             if not self.already_liked(post):
                 self.like(post)
                 self.redirect('/blog')
@@ -309,6 +294,7 @@ class Post(ndb.Model):
     img_url = ndb.StringProperty(required=True)
     author = ndb.StringProperty(required=True)
     like_count = ndb.IntegerProperty()
+    likes = ndb.StringProperty(repeated=True)
     created = ndb.DateTimeProperty(auto_now_add=True)
 
 
@@ -333,7 +319,7 @@ class NewPostHandler(BlogHandler):
             content = content.replace('\n', '<br>')
             author = str(self.user.name)
             post = Post(parent=blog_key(), subject=subject, content=content,
-                        author=author, img_url=img_url, like_count='0')
+                        author=author, img_url=img_url, like_count=0, likes=[])
             post_key = post.put()
             post_id = post_key.id()
             self.redirect('/blog/post?post_id=' + str(post_id))

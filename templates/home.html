@@ -23,9 +23,15 @@
           </div>
         </a>
         <a href="/blog/post?post_id={{ post.key.id() }}">
-          <div class="subject">
-            {{ post.subject }}
+          <div class="post-header">
+            <div class="subject">
+              {{ post.subject }}
+            </div>
+            <div class="author">
+              By {{ post.author }}
+            </div>
           </div>
+
         </a>
         <div class="content">
           {{ post.content | safe }}

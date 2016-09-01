@@ -14,16 +14,32 @@
         border-bottom: 2px solid #333;
       }
 
+      .post-header {
+        margin: 1em 0;
+        display: flex;
+        justify-content: center;
+        align-items: baseline;
+        border-bottom: 2px solid #999;
+      }
+
       .subject {
         font-family: cursive, sans-serif;
         font-size: 1.5em;
         font-weight: 800;
-        margin: 1em 0;
-        text-align: center;
-        border-bottom: 2px solid #999;
+      }
+
+      .author {
+        font-family: cursive, sans-serif;
+        font-size: .75em;
+        margin-left: .75em;
       }
 
       .subtitle {
+        font-size: 1.5em;
+      }
+
+      .home {
+        margin: 1em 0;
         font-size: 1.5em;
       }
 
@@ -92,8 +108,11 @@
         </div>
       </div>
       <div class="col-md-6 col-md-offset-1 content">
-      {% block content %}
-      {% endblock %}
+        <div class="home error col-md-12 text-center">
+          {{ error }}
+        </div>
+        {% block content %}
+        {% endblock %}
       </div>
     </div>
   </body>

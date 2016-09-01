@@ -277,12 +277,13 @@ class LikeHandler(BlogHandler):
     def already_liked(self, post):
         user_likes = Likes.query(ancestor=post.key, projection=[Likes.user])
         user_likes = user_likes.fetch()
+        result = False
         for user_like in user_likes:
             if self.user.name == user_like.user:
-                self.write('You have already liked this')
                 return True
             else:
-                return False
+                pass
+        return result
 
     def post(self):
         if self.user:
@@ -290,12 +291,11 @@ class LikeHandler(BlogHandler):
             post = Post.get_by_id(int(post_id), parent=blog_key())
             if not self.already_liked(post):
                 self.like(post)
-                self.write('total likes are now %s' % str(post.like_count))
-                self.write('you are logged in and liked this')
+                self.redirect('/blog')
             else:
-                pass
+                self.redirect('/blog')
         else:
-            self.write('you must log in to like this')
+            self.redirect('/blog/login')
 
 
 # Post stuff

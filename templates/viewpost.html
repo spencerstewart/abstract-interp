@@ -1,33 +1,47 @@
 {% extends 'base.html' %}
 
-{% block title %}View Post{% endblock %}
+{% block title %}{{ post.subject }}{% endblock %}
 
-{% block header_h2 %}
-{% endblock %}
-
-{% block sidebar %}
+{% block sideheader %}
 <div class="subject">
   {{ post.subject }}
 </div>
+{% endblock %}
+
 <div class="content">
   {{ post.content | safe }}
 </div>
-{% endblock %}
 
 {% block content %}
 <div class="row body">
-    <div class="col-md-12 post">
-      <div class="insta_img">
-        <img class="img-responsive" src="{{ post.img_url }}" alt="An abstract Instagram photo" />
-      </div>
+  <div class="col-md-8">
+    <div class="insta_img">
+      <img class="img-responsive" src="{{ post.img_url }}" alt="An abstract Instagram photo" />
     </div>
-    <div class="col-md-12">
+  </div>
+  <div class="col-md-4">
+    <div class="post-body">
+      {{ post.content | safe }}
       {% if author %}
-      <form method="post" action="/blog/edit">
-        <button type="submit" name="edit" value="{{ post.key.id() }}">Edit</button>
-        <button type="submit" name="delete" value="{{ post.key.id() }}">Delete</button>
+      <form method="post" action="/blog/edit" class="edit text-center">
+        <button class="btn" type="submit" name="edit" value="{{ post.key.id() }}">Edit</button>
+        <button class="btn btn-danger" type="submit" name="delete" value="{{ post.key.id() }}">Delete</button>
       </form>
       {% endif %}
     </div>
+    <div class="post-footer">
+      <form class="" action="/blog/like" method="post">
+        <button class="btn btn-primary" type="submit" name="liked" value="{{ post.key.id() }}">Like</button>
+        <span>{{ post.like_count }} Likes</span>
+      </form>
+      <div class="author">
+        By {{ post.author }}
+      </div>
+    </div>
+    <div class="comments">
+      <h4>Comments</h4>
+      A whole bunch of comments will go here.
+    </div>
+  </div>
 </div>
 {% endblock %}

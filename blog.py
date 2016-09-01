@@ -125,6 +125,9 @@ class InstaAPI(object):
 
 class MainPageHandler(BlogHandler):
     def get(self):
+        error = ''
+        if self.request.get('error'):
+            error = self.request.get('error')
         posts = Post.query()
         posts = posts.order(-Post.created)
         posts = posts.fetch(10)
@@ -132,7 +135,7 @@ class MainPageHandler(BlogHandler):
         if self.user:  # Takes from BlogHandler initialize. Is there a better way?
             name = self.user.name
 
-        self.render('home.html', posts=posts, user_name=name)
+        self.render('home.html', posts=posts, user_name=name, error=error)
 
 
 # Users Code
@@ -273,12 +276,16 @@ class LikeHandler(BlogHandler):
         if self.user:
             post_id = self.request.get('liked')
             post = Post.get_by_id(int(post_id), parent=blog_key())
-            # self.already_liked(post)
-            if not self.already_liked(post):
-                self.like(post)
-                self.redirect('/blog')
+            if not self.user.name == post.author:
+                if not self.already_liked(post):
+                    self.like(post)
+                    self.redirect('/blog')
+                else:
+                    error = "You already liked that item."
+                    self.redirect('/blog?error=' + error)
             else:
-                self.redirect('/blog')
+                error = "You can't like you're own posts."
+                self.redirect('/blog?error=' + error)
         else:
             self.redirect('/blog/login')
 
@@ -371,6 +378,9 @@ class EditPostHandler(BlogHandler):
                 post = Post.get_by_id(int(post_id), parent=blog_key())
                 post.key.delete()
                 self.redirect('/blog')
+            elif self.request.get('cancel'):
+                post_id = self.request.get('cancel')
+                self.redirect('/blog/post?post_id=' + post_id)
             elif self.request.get('update'):
                 post_id = self.request.get('update')
                 post = Post.get_by_id(int(post_id), parent=blog_key())

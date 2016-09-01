@@ -2,7 +2,16 @@
 
 {% block title %}Add a new Post{% endblock %}
 {% block header_h2 %}How does it make you feel?{% endblock %}
-{% block sidebar %}
+{% block sideheader %}
+  <p class="subtitle">Share an interpretation</p>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-8">
+    <img class="img-responsive" src="{{ img_url }}" alt="" />
+  </div>
+  <div class="col-lg-4">
     <div class="text-left">
       <form class="" method="post">
         <div class="form-group">
@@ -13,7 +22,7 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="content">Content:</label>
+          <label for="content">Interpretation:</label>
           <textarea class="form-control" name="content" rows="8" cols="40" id="content">{{ content }}</textarea>
           <div class="error">
             {{ c_error }}
@@ -23,14 +32,6 @@
         <button class="btn btn-primary pull-right" type="submit" name="submit">Submit</button>
       </form>
     </div>
-{% endblock %}
-
-{% block content %}
-<div class="row">
-  <div class="col-lg-12">
-    <img class="img-responsive" src="{{ img_url }}" alt="" />
-  </div>
-  <div class="col-lg-12">
   </div>
 </div>
 

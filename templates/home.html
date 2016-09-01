@@ -2,13 +2,11 @@
 
 {% block title %}Abstract Interpretations{% endblock %}
 
-{% block header_h2 %}
-{% endblock %}
 
-{% block sidebar %}
+{% block sideheader %}
     <p class="subtitle">
       Receive an abstract photo.<br><a href="/blog/newpost">
-      Share your raw interpretation. </a>
+      Share a new interpretation. </a>
     </p>
 {% endblock %}
 
@@ -16,31 +14,35 @@
 
 {% block content %}
     {% for post in posts %}
-      <div class="col-md-12 post">
-        <a href="/blog/post?post_id={{ post.key.id() }}">
-          <div class="insta_img">
-            <img class="img-responsive" src="{{ post.img_url }}" alt="An abstract Instagram photo" />
-          </div>
-        </a>
-        <a href="/blog/post?post_id={{ post.key.id() }}">
-          <div class="post-header">
-            <div class="subject">
-              {{ post.subject }}
+      <div class="row post">
+        <div class="col-md-8">
+          <a href="/blog/post?post_id={{ post.key.id() }}">
+            <div class="insta_img">
+              <img class="img-responsive" src="{{ post.img_url }}" alt="An abstract Instagram photo" />
             </div>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="/blog/post?post_id={{ post.key.id() }}">
+            <div class="post-header">
+              <div class="subject">
+                {{ post.subject }}
+              </div>
+            </div>
+
+          </a>
+          <div class="post-body">
+            {{ post.content | safe }}
+          </div>
+          <div class="post-footer">
+            <form class="" action="/blog/like" method="post">
+              <button class="btn btn-primary" type="submit" name="liked" value="{{ post.key.id() }}">Like</button>
+              <span>{{ post.like_count }} Likes</span>
+            </form>
             <div class="author">
               By {{ post.author }}
             </div>
           </div>
-
-        </a>
-        <div class="content">
-          {{ post.content | safe }}
-        </div>
-        <div class="like">
-          <form class="" action="/blog/like" method="post">
-            <button class="btn btn-primary" type="submit" name="liked" value="{{ post.key.id() }}">Like</button>
-          </form>
-          <span>{{ post.like_count }}</span>
         </div>
       </div>
     {% endfor %}

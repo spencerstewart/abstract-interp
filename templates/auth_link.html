@@ -2,8 +2,10 @@
 
 {% block title %}Auth for Insta{% endblock %}
 
-{% block header_h2 %}
+{% block sideheader %}
+<p class="subtitle">
   Authorize instagram, foo!
+</p>
 {% endblock %}
 
 {% block content %}
@@ -11,7 +13,7 @@
     <div class="col-md-6 col-md-offset-3 post">
       <div class="">
         <a href="https://api.instagram.com/oauth/authorize/?client_id={{client_id}}&redirect_uri={{redirect_uri}}&response_type=code">
-          <button class="btn btn-primary">
+          <button class="btn btn-primary" style="font-size:3em;">
             Authorize it. Right. Now.
           </button>
         </a>

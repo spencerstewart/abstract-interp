@@ -100,11 +100,16 @@ class BlogHandler(BaseHandler):
             return self.user.name
 
 
-class InstaAPI(object):
+class InstaAPI(webapp2.RequestHandler):
     @classmethod
     def get_access_token(cls):
-        config = list(Config.query().fetch(limit=1))[0]
-        return config.access_token
+        config_info = list(Config.query().fetch(limit=1))
+        if config_info:
+            config = config_info[0]
+            return config.access_token
+        else:
+            return False
+
 
     @classmethod
     def get_rand_image_url(cls):
@@ -114,12 +119,15 @@ class InstaAPI(object):
             # https://api.instagram.com/v1/tags/
             # {tag-name}/media/recent?access_token=ACCESS-TOKEN """
         endpoint = 'https://api.instagram.com/v1/users/self/media/recent/?access_token='
-        # fetchs Insta API access_token
-        url = endpoint + cls.get_access_token()
-        response = urllib2.urlopen(url)
-        data = json.load(response)
-        random_pic_num = random.randint(0, 19)
-        return data['data'][random_pic_num]['images']['standard_resolution']['url']
+        # fetches Insta API access_token
+        if not cls.get_access_token():
+            return False
+        else:
+            url = endpoint + cls.get_access_token()
+            response = urllib2.urlopen(url)
+            data = json.load(response)
+            random_pic_num = random.randint(0, 19)
+            return data['data'][random_pic_num]['images']['standard_resolution']['url']
         # https://api.instagram.com/v1/users/self/media/recent/?access_token=208185193.c00f51e.3dc02da58c7f4bb2a194192475291671
 
 
@@ -309,6 +317,8 @@ class NewPostHandler(BlogHandler):
     def get(self):
         # self.render('newpost.html', get_insta_image())
         img_url = InstaAPI.get_rand_image_url()
+        if not img_url:
+            self.redirect('/blog/auth')
         name = ""
         if self.user:  # Takes from BlogHandler initialize. Is there a better way?
             name = self.user.name

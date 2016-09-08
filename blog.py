@@ -292,7 +292,7 @@ class LikeHandler(BlogHandler):
                     error = "You already liked that item."
                     self.redirect('/blog?error=' + error)
             else:
-                error = "You can't like you're own posts."
+                error = "You can't like your own posts."
                 self.redirect('/blog?error=' + error)
         else:
             self.redirect('/blog/login')

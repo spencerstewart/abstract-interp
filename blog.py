@@ -355,6 +355,10 @@ class ViewPostHandler(BlogHandler):
     def get(self):
         post_id = self.request.get('post_id')
         post = Post.get_by_id(int(post_id), parent=blog_key())
+        comments = Comment.query()
+        comments = comments.filter(Comment.post_id == post_id)
+        comments = comments.order(-Comment.created)
+        comments = comments.fetch(5)
         name = ""
         author = ""
         if self.user:
@@ -362,8 +366,28 @@ class ViewPostHandler(BlogHandler):
             if post.author and name == post.author:
                 author = post.author
         self.render('viewpost.html', post=post,
-                    user_name=name, author=author,)
+                    user_name=name, author=author,
+                    comments=comments)
 
+    def post(self):
+        if self.user:
+            author = str(self.user.name)
+            comment = self.request.get('comment')
+            post_id = self.request.get('post_id')
+            comment = Comment(user=author, post_id=post_id,
+                              comment=comment)
+            comment.put()
+            self.redirect('/blog/post?post_id=' + post_id)
+
+        else:
+            self.redirect('/blog/login')
+
+
+class Comment(ndb.Model):
+    user = ndb.StringProperty(required=True)
+    post_id = ndb.StringProperty(required=True)
+    comment = ndb.StringProperty(required=True)
+    created = ndb.DateTimeProperty(auto_now_add=True)
 
 class EditPostHandler(BlogHandler):
         def get(self):

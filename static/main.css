@@ -45,6 +45,12 @@ h1 {
   font-size: 1.5em;
 }
 
+.small-info {
+  font-style: italic;
+  font-size: .75em;
+  margin: 10px;
+}
+
 .error {
   color: red;
 }
@@ -94,6 +100,12 @@ h1 {
 }
 
 .sidebar-user {
+}
+
+.post-button-area {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 @media (max-width: 768px){

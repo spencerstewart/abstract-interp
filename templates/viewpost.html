@@ -40,7 +40,35 @@
     </div>
     <div class="comments">
       <h4>Comments</h4>
-      A whole bunch of comments will go here.
+      {% if user_name %}
+      <div class="comment-form">
+        <form class="" method="post">
+          <div class="form-group">
+            <label for="comment">Post a comment:</label>
+            <textarea class="form-control" name="comment" rows="2" cols="40"></textarea>
+          </div>
+          <div class="form-group post-button-area">
+            <p class="small-info">
+              Logged in as {{ user_name }}
+            </p>
+            <button type="submit" name="post_comment" class="btn">Post</button>
+          </div>
+        </form>
+      </div>
+      {% else %}
+      <p>
+        <a href="/blog/login">Login to post a comment.</a>
+      </p>
+      {% endif %}
+      <p>
+        A whole bunch of comments will go here.
+        In reverse chronological order.
+      </p>
+      {% for comment in comments %}
+        <p>
+          {{ comment.comment }}
+        </p>
+      {% endfor %}
     </div>
   </div>
 </div>

@@ -352,7 +352,7 @@ class NewPostHandler(BlogHandler):
 
 
 class ViewPostHandler(BlogHandler):
-    def get(self):
+    def get(self, **kw):
         post_id = self.request.get('post_id')
         post = Post.get_by_id(int(post_id), parent=blog_key())
         comments = Comment.query()
@@ -367,24 +367,46 @@ class ViewPostHandler(BlogHandler):
                 author = post.author
         self.render('viewpost.html', post=post,
                     user_name=name, author=author,
-                    comments=comments)
+                    comments=comments, **kw)
 
     def post(self):
         if self.user:
-            author = str(self.user.name)
-            comment = self.request.get('comment')
-            post_id = self.request.get('post_id')
-            comment = Comment(user=author, post_id=post_id,
-                              comment=comment)
-            comment.put()
-            self.redirect('/blog/post?post_id=' + post_id)
+            user_name = self.user.name
+            if self.request.get('comment'):
+                comment = self.request.get('comment')
+                author = user_name
+                post_id = self.request.get('post_id')
+                comment = Comment(author=author, post_id=post_id,
+                                  comment=comment)
+                comment.put()
+                self.redirect('/blog/post?post_id=' + post_id)
+            elif self.request.get('delete'):
+                post_id = self.request.get('post_id')
+                comment_id = int(self.request.get('delete'))
+                comment_to_delete = Comment.get_by_id(comment_id)
+                comment_to_delete.key.delete()
+                self.redirect('/blog/post?post_id=' + post_id)
+            elif self.request.get('edit'):
+                comment_id = int(self.request.get('edit'))
+                comment_to_edit = Comment.get_by_id(comment_id)
+                self.render('editcomment.html', comment=comment_to_edit,
+                            user_name=user_name, comment_id=comment_id)
+            elif self.request.get('update'):
+                comment_id = int(self.request.get('update'))
+                comment_to_edit = Comment.get_by_id(comment_id)
+                self.write(comment_to_edit.comment)
+                comment_to_edit.comment = self.request.get('updated-comment')
+                comment_to_edit.put()
+                self.redirect('/blog/post?post_id=' + comment_to_edit.post_id)
+            else:
+                self.get()
 
         else:
             self.redirect('/blog/login')
 
 
 class Comment(ndb.Model):
-    user = ndb.StringProperty(required=True)
+    author = ndb.StringProperty(required=True)
     post_id = ndb.StringProperty(required=True)
     comment = ndb.StringProperty(required=True)
     created = ndb.DateTimeProperty(auto_now_add=True)

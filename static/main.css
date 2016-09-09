@@ -55,6 +55,10 @@ h1 {
   color: red;
 }
 
+.msg {
+  font-style: italic;
+}
+
 .content {
 
 }
@@ -88,10 +92,43 @@ h1 {
   padding-top: 10px;
 }
 
+.btn-no-style {
+  background:none;
+  border: none;
+  font-size: 1em;
+  color: inherit;
+  padding: 0;
+}
+
+.btn-no-style:hover {
+  text-decoration: underline;
+}
+
 .comments {
   padding-top: 10px;
   border-top: 1px solid #999;
+}
 
+.comment-container {
+  width: 100%;
+  float: left;
+  padding: 0.5em 0;
+  border-top: 1px solid #555
+}
+
+.comment-body {
+
+}
+
+.comment-meta {
+  float: right;
+  font-size: .75em;
+  color: #555;
+  font-style: italic;
+}
+
+.comment-meta form {
+  display: inline-block;
 }
 
 #sidebar {

@@ -60,14 +60,23 @@
         <a href="/blog/login">Login to post a comment.</a>
       </p>
       {% endif %}
-      <p>
-        A whole bunch of comments will go here.
-        In reverse chronological order.
-      </p>
+
       {% for comment in comments %}
-        <p>
+      <div class="comment-container">
+        <div class="comment-body">
           {{ comment.comment }}
-        </p>
+        </div>
+        <div class="comment-meta">
+          {% if user_name and user_name == comment.author %}
+          <form method="post">
+            <button class="btn-no-style" type="submit" name="edit" value="{{ comment.key.id() }}">Edit</button>
+            /
+            <button class="btn-no-style" type="submit" name="delete" value="{{ comment.key.id() }}">Delete</button>
+          </form>
+          {% endif %}
+          - {{ comment.author }}
+        </div>
+      </div>
       {% endfor %}
     </div>
   </div>

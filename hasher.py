@@ -17,6 +17,21 @@ def check_secure_val(secure_val):
         return val
 
 
+def make_img_url_hash(val):
+    """ This function slices the end of the img url, which is a unique key """
+    img_url_key = val[-10:-2]
+    return hmac.new(salt, img_url_key).hexdigest()
+
+
+def check_img_url_hash(img_url, secure_val):
+    """ This function checks the img_url_hash and returns empty string or
+        an error message """
+    if secure_val == make_img_url_hash(img_url):
+        return ''
+    else:
+        return '<div style="font-size:10em;">GET AWAY FROM ME, SCARY HACKER!</div>'
+
+
 def make_salt(length=5):
     return ''.join(random.SystemRandom().choice(string.letters) for x in range(length))
 

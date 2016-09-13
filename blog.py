@@ -110,7 +110,6 @@ class InstaAPI(webapp2.RequestHandler):
         else:
             return False
 
-
     @classmethod
     def get_rand_image_url(cls):
         """ Gets a random image from 20 most recent
@@ -260,7 +259,7 @@ class LoginHandler(BlogHandler):
 class LogoutHandler(BlogHandler):
     def get(self):
         self.logout()
-        self.redirect('/blog/signup')
+        self.redirect('/blog')
 
 
 # Likes stuff
@@ -308,7 +307,7 @@ class Post(ndb.Model):
     content = ndb.TextProperty(required=True)
     img_url = ndb.StringProperty(required=True)
     author = ndb.StringProperty(required=True)
-    like_count = ndb.IntegerProperty()
+    like_count = ndb.IntegerProperty()  # Can do at query level
     likes = ndb.StringProperty(repeated=True)
     created = ndb.DateTimeProperty(auto_now_add=True)
 
@@ -317,21 +316,27 @@ class NewPostHandler(BlogHandler):
     def get(self):
         # self.render('newpost.html', get_insta_image())
         img_url = InstaAPI.get_rand_image_url()
+        img_url_hash = hasher.make_img_url_hash(img_url)
+        self.write(img_url_hash)
         if not img_url:
             self.redirect('/blog/auth')
         name = ""
         if self.user:  # Takes from BlogHandler initialize. Is there a better way?
             name = self.user.name
-        self.render('newpost.html', img_url=img_url, user_name=name)
+        self.render('newpost.html', img_url=img_url, user_name=name,
+                    img_url_hash=img_url_hash)
 
     def post(self):
         subject = self.request.get('subject')
         content = self.request.get('content')
         img_url = self.request.get('img_url')
+        img_url_hash = self.request.get('img_url_hash')
         s_error = ''
         c_error = ''
+        img_error = hasher.check_img_url_hash(img_url, img_url_hash)
 
-        if subject and content and img_url:
+        if subject and content and \
+           img_url and not img_error:
             content = cgi.escape(content)
             content = content.replace('\n', '<br>')
             author = str(self.user.name)
@@ -345,13 +350,17 @@ class NewPostHandler(BlogHandler):
                 s_error = "Please include a subject for your submission"
             if not content:
                 c_error = "Please include content with your submission"
+            if img_error:
+                self.write(img_error)
             self.render('newpost.html',
                         s_error=s_error, c_error=c_error,
                         subject=subject, content=content,
-                        img_url=img_url)
+                        img_url=img_url, img_url_hash=img_url_hash)
 
 
 class ViewPostHandler(BlogHandler):
+    """ A docstring b
+    """
     def get(self, **kw):
         post_id = self.request.get('post_id')
         post = Post.get_by_id(int(post_id), parent=blog_key())
@@ -412,6 +421,7 @@ class Comment(ndb.Model):
     comment = ndb.StringProperty(required=True)
     created = ndb.DateTimeProperty(auto_now_add=True)
 
+
 class EditCommentHandler(BlogHandler):
     def get(self):
         self.render('editcomment.html')
@@ -434,6 +444,7 @@ class EditCommentHandler(BlogHandler):
     #             self.redirect('/blog/post?post_id=' + comment_to_edit.post_id)
     #     else:
     #         self.redirect('/blog/login')
+
 
 class EditPostHandler(BlogHandler):
         def get(self):

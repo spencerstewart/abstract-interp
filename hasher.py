@@ -24,7 +24,8 @@ def make_img_url_hash(val):
 
 
 def check_img_url_hash(img_url, secure_val):
-    """ This function checks the img_url_hash and returns a boolean """
+    """ This function checks the img_url_hash and returns empty string or
+        an error message """
     if secure_val == make_img_url_hash(img_url):
         return ''
     else:

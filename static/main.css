@@ -1,14 +1,22 @@
-a,a:hover {
-  color: inherit;
-}
-
 body {
   background-color: #fafafa;
+}
+
+h1 {
+  margin: 10px 0 10px
 }
 
 p {
   margin: 10px 0;
 }
+
+a,a:hover {
+  color: inherit;
+}
+
+/*
+ * Header CSS
+ */
 
 .header {
   display: flex;
@@ -18,19 +26,73 @@ p {
   margin: 10px 0;
 }
 
-h1 {
-  margin: 10px 0 10px
-}
-
-
 .title {
   text-align: center;
   border-right: 2px solid #333;
 }
 
+.subtitle {
+  font-size: 1.5em;
+}
+
+.login {
+  color: #999;
+}
+
+/*
+ * Welcome CSS
+ */
+
+.welcome {
+  text-align: center;
+}
+
+/*
+ * Post CSS
+ */
+
+.img-responsive {
+  margin: 0 auto;
+}
+
+ .post {
+   margin: 0 auto 2em;
+   max-width: 600px;
+   padding: 20px 0;
+   border-radius: 10px;
+   border: 1px solid #efefef;
+   background: #fff;
+ }
+
+ .post-header {
+   margin: 1em 0;
+   font-size: 1.5em;
+   display: flex;
+   justify-content: center;
+   align-items: baseline;
+ }
+
+ .post-body {
+   margin-top: 1em;
+   padding-top: 1em;
+   padding-bottom: 1em;
+   border-top: 2px solid #333;
+   border-bottom: 2px solid #333;
+ }
+
+ .author-options { /* options to edit or delete post */
+   padding-top: 10px;
+ }
+
+ .post-footer {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   padding: 20px 0;
+ }
+
 .subject {
   font-family: cursive, sans-serif;
-  font-size: 1.5em;
   font-weight: 800;
 }
 
@@ -40,97 +102,32 @@ h1 {
   text-align: right;
 }
 
-.subtitle {
-  font-size: 1.5em;
-}
-
-.home {
-  margin: 1em 0;
-  font-size: 1.5em;
-}
-
 .small-info {
   font-style: italic;
   font-size: .75em;
   margin: 10px;
 }
 
-.error {
-  color: red;
-}
-
-.msg {
-  font-style: italic;
-}
-
-.content {
-
-}
-
-.post {
-  margin: 0 auto 4em;
-  max-width: 600px;
-  padding: 20px 0;
-  border-radius: 10px;
-  border: 1px solid #efefef;
-  background: #fff;
-}
-
-.post-header {
-  margin: 1em 0;
-  display: flex;
-  justify-content: center;
-  align-items: baseline;
-}
-
-.post-body {
-  padding-top: 1em;
-  padding-bottom: 1em;
-  border-top: 2px solid #333;
-  border-bottom: 2px solid #333;
-}
-
-.post-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 0;
-}
-
-.insta_img {
-  
-}
-
-.edit {
-  padding-top: 10px;
-}
-
-.btn-no-style {
-  background:none;
-  border: none;
-  font-size: 1em;
-  color: inherit;
-  padding: 0;
-}
-
-.btn-no-style:hover {
-  text-decoration: underline;
-}
+/*
+ * Comment CSS
+ */
 
 .comments {
   padding-top: 10px;
   border-top: 1px solid #999;
 }
 
-.comment-container {
+.post-comment-area {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.comment {
   width: 100%;
   float: left;
   padding: 0.5em 0;
   border-top: 1px solid #555
-}
-
-.comment-body {
-
 }
 
 .comment-meta {
@@ -144,19 +141,38 @@ h1 {
   display: inline-block;
 }
 
-#sidebar {
-  overflow-y: auto;
-  max-height: 100%;
+/*
+ * Message & Error CSS
+ */
+
+.error {
+  color: red;
+  font-size: 1.5em;
 }
 
-.sidebar-user {
+.msg {
+  font-style: italic;
 }
 
-.post-button-area {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+/*
+ * Button Styles
+ */
+
+.btn-no-style {
+  background:none;
+  border: none;
+  font-size: 1em;
+  color: inherit;
+  padding: 0;
 }
+
+.btn-no-style:hover {
+  text-decoration: underline;
+}
+
+/*
+ * Media Queries!!!
+ */
 
 @media (max-width: 768px){
   .title {
@@ -164,14 +180,17 @@ h1 {
     border-bottom: 2px solid #333;
     width: 100%;
   }
+  .subtitle {
+    width: 100%;
+    text-align: center;
+  }
+  .login {
+    text-align: center;
+  }
 }
 
 @media (max-width: 992px){
-  #sidebar {
-    position: static;
-    width: 100%;
-    margin-bottom: 2em;
-  }
+
 }
 @media (max-width: 1200px){
   .title h1{

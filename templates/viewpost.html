@@ -2,7 +2,7 @@
 
 {% block title %}{{ post.subject }}{% endblock %}
 
-{% block sideheader %}
+{% block subtitle %}
 <div class="subject">
   {{ post.subject }}
 </div>
@@ -22,8 +22,8 @@
   <div class="col-md-4">
     <div class="post-body">
       {{ post.content | safe }}
-      {% if author %}
-      <form method="post" action="/blog/edit" class="edit text-center">
+      {% if user_is_author %}
+      <form method="post" action="/blog/edit" class="author-options text-center">
         <button class="btn" type="submit" name="edit" value="{{ post.key.id() }}">Edit</button>
         <button class="btn btn-danger" type="submit" name="delete" value="{{ post.key.id() }}">Delete</button>
       </form>
@@ -47,7 +47,7 @@
             <label for="comment">Post a comment:</label>
             <textarea class="form-control" name="comment" rows="2" cols="40"></textarea>
           </div>
-          <div class="form-group post-button-area">
+          <div class="form-group post-comment-area">
             <p class="small-info">
               Logged in as {{ user_name }}
             </p>
@@ -62,7 +62,7 @@
       {% endif %}
 
       {% for comment in comments %}
-      <div class="comment-container">
+      <div class="comment">
         <div class="comment-body">
           {{ comment.comment }}
         </div>

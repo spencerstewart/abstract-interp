@@ -22,6 +22,8 @@ jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
 
 
 class Config(ndb.Model):
+    """ Holds access Instagram API authentication info. """
+
     access_token = ndb.StringProperty(required=True)
 
 
@@ -29,6 +31,8 @@ class Config(ndb.Model):
 
 
 class BaseHandler(webapp2.RequestHandler):
+    """ Superclass that provides convenient helper functions. """
+
     def write(self, *a, **kw):
         self.response.out.write(*a, **kw)
 
@@ -41,6 +45,8 @@ class BaseHandler(webapp2.RequestHandler):
 
 
 class AuthHandler(BaseHandler):
+    """ Handles Instagram API authorization. """
+
     insta_creds = {'client_id': 'c00f51ef61ab4ac8ac543ae906bf4fde',
                    'redirect_uri': 'http://localhost:8080/blog/auth',  # CHANGE ME!!!
                    # use https://abstract-interp.appspot.com/blog/auth for prod
@@ -49,14 +55,29 @@ class AuthHandler(BaseHandler):
                    'grant_type': 'authorization_code'}
 
     def get(self):
-        if self.request.get('code'):
+        """ Links to Instagram and receives access_token.
+
+            On the intial visit to this page,  information about
+            authorizing the Instagram API is presented to the user
+            along with a button to authorize this app. The
+            button submits a GET request to the Instagram API. In turn,
+            the Instagram API redirects to this page with a GET code
+            parameter.
+
+            When this pages receives the code parameter, it posts
+            this code along with app ID parameters to Instagram's
+            access_token endpoint. If everything checks out, Instagram
+            returns an OAuth token packaged in JSON. We save this
+            access_token as a Config entity in Google Datastore.
+         """
+
+        if self.request.get('code'):  # Receives code parameter from Instagram
             self.insta_creds['code'] = str(self.request.get('code'))
             url = 'https://api.instagram.com/oauth/access_token'
-            code = str(self.request.get('code'))
             try:
                 form_data = urllib.urlencode(self.insta_creds)
                 headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-                result = urlfetch.fetch(
+                result = urlfetch.fetch(  # Uses GAE fetch method
                     url=url,
                     payload=form_data,
                     method=urlfetch.POST,
@@ -72,15 +93,17 @@ class AuthHandler(BaseHandler):
 
 
 class BlogHandler(BaseHandler):
+    """ Contains convenience functions inherited by sub classes. """
+
     def set_secure_cookie(self, name, val):
-        # Sets a secure value for a cookie and adds to header
+        """ Sets a secure value for a cookie and adds to header. """
         secure_val = hasher.make_secure_val(val)
         self.response.headers.add_header(
             'Set-Cookie',
             '%s=%s; Path=/' % (name, secure_val))
 
     def read_secure_cookie(self, name):
-        # Returns original value of a secured cookie val
+        """ Returns original value of a secured cookie val. """
         cookie_val = self.request.cookies.get(name)
         return cookie_val and hasher.check_secure_val(cookie_val)
 
@@ -91,16 +114,15 @@ class BlogHandler(BaseHandler):
         self.response.headers.add_header('Set-Cookie', 'user_id=; Path=/')
 
     def initialize(self, *a, **kw):
+        """ Loads logged-in user object. """
         webapp2.RequestHandler.initialize(self, *a, **kw)
         uid = self.read_secure_cookie('user_id')
         self.user = uid and User.by_id(int(uid))
 
-    def logged_in(self):
-        if self.user:
-            return self.user.name
-
 
 class InstaAPI(webapp2.RequestHandler):
+    """ Instagram API functions. """
+
     @classmethod
     def get_access_token(cls):
         config_info = list(Config.query().fetch(limit=1))
@@ -112,43 +134,27 @@ class InstaAPI(webapp2.RequestHandler):
 
     @classmethod
     def get_rand_image_url(cls):
-        """ Gets a random image from 20 most recent
+        """ Gets a random image from 20 most recent images.
 
-            # Future Endpoint:
-            # https://api.instagram.com/v1/tags/
-            # {tag-name}/media/recent?access_token=ACCESS-TOKEN """
+            Future Endpoint:
+            https://api.instagram.com/v1/tags/
+            {tag-name}/media/recent?access_token=ACCESS-TOKEN """
+
         endpoint = 'https://api.instagram.com/v1/users/self/media/recent/?access_token='
-        # fetches Insta API access_token
         if not cls.get_access_token():
-            return False
+            return False  # Caught by NewPostHandler function.
         else:
             url = endpoint + cls.get_access_token()
             response = urllib2.urlopen(url)
-            data = json.load(response)
+            data = json.load(response)  # JSON response with many img objects
             random_pic_num = random.randint(0, 19)
             return data['data'][random_pic_num]['images']['standard_resolution']['url']
-        # https://api.instagram.com/v1/users/self/media/recent/?access_token=208185193.c00f51e.3dc02da58c7f4bb2a194192475291671
-
-
-class MainPageHandler(BlogHandler):
-    def get(self):
-        error = ''
-        if self.request.get('error'):
-            error = self.request.get('error')
-        posts = Post.query()
-        posts = posts.order(-Post.created)
-        posts = posts.fetch(10)
-        name = ""
-        if self.user:  # Takes from BlogHandler initialize. Is there a better way?
-            name = self.user.name
-
-        self.render('home.html', posts=posts, user_name=name, error=error)
 
 
 # Users Code
 
-
 def users_key(group='default'):
+    """ Defines default parent key for user entities. """
     return ndb.Key('users', group)
 
 
@@ -189,7 +195,7 @@ class User(ndb.Model):
 
 
 class SignupHandler(BlogHandler):
-    def get(self, username="", email=""):
+    def get(self):
         if self.user:
             self.redirect('/blog')
         else:
@@ -258,8 +264,25 @@ class LoginHandler(BlogHandler):
 
 class LogoutHandler(BlogHandler):
     def get(self):
-        self.logout()
+        self.logout()  # Sets user_id cookie val to empty
         self.redirect('/blog')
+
+
+class MainPageHandler(BlogHandler):
+    """ Homepage. """
+
+    def get(self, user_name=''):
+        error = ''
+        if self.request.get('error'):
+            error = self.request.get('error')
+        posts = Post.query()
+        posts = posts.order(-Post.created)
+        posts = posts.fetch(10)
+        name = ""
+        if self.user:
+            user_name = self.user.name
+        self.render('home.html', posts=posts,
+                    user_name=user_name, error=error)
 
 
 # Likes stuff
@@ -280,10 +303,11 @@ class LikeHandler(BlogHandler):
             return False
 
     def post(self):
-        if self.user:
+        """ Form action for likes. """
+        if self.user:  # Must be logged in to like a post.
             post_id = self.request.get('liked')
             post = Post.get_by_id(int(post_id), parent=blog_key())
-            if not self.user.name == post.author:
+            if not self.user.name == post.author:  # Must not be author
                 if not self.already_liked(post):
                     self.like(post)
                     self.redirect('/blog')
@@ -314,14 +338,13 @@ class Post(ndb.Model):
 
 class NewPostHandler(BlogHandler):
     def get(self):
-        # self.render('newpost.html', get_insta_image())
-        img_url = InstaAPI.get_rand_image_url()
-        img_url_hash = hasher.make_img_url_hash(img_url)
-        self.write(img_url_hash)
+        img_url = InstaAPI.get_rand_image_url()  # returns false on error
         if not img_url:
             self.redirect('/blog/auth')
+            return
+        img_url_hash = hasher.make_img_url_hash(img_url)
         name = ""
-        if self.user:  # Takes from BlogHandler initialize. Is there a better way?
+        if self.user:
             name = self.user.name
         self.render('newpost.html', img_url=img_url, user_name=name,
                     img_url_hash=img_url_hash)
@@ -333,10 +356,12 @@ class NewPostHandler(BlogHandler):
         img_url_hash = self.request.get('img_url_hash')
         s_error = ''
         c_error = ''
-        img_error = hasher.check_img_url_hash(img_url, img_url_hash)
+        img_error = hasher.check_img_url_hash(
+            img_url, img_url_hash)  # returns empty string if no error
 
-        if subject and content and \
-           img_url and not img_error:
+        # Valid form data
+        if (subject and content and
+            img_url and not img_error):
             content = cgi.escape(content)
             content = content.replace('\n', '<br>')
             author = str(self.user.name)
@@ -345,6 +370,8 @@ class NewPostHandler(BlogHandler):
             post_key = post.put()
             post_id = post_key.id()
             self.redirect('/blog/post?post_id=' + str(post_id))
+
+        # Erroneous form data
         else:
             if not subject:
                 s_error = "Please include a subject for your submission"
@@ -359,8 +386,7 @@ class NewPostHandler(BlogHandler):
 
 
 class ViewPostHandler(BlogHandler):
-    """ A docstring b
-    """
+    """ Viewing an individual post. """
     def get(self, **kw):
         post_id = self.request.get('post_id')
         post = Post.get_by_id(int(post_id), parent=blog_key())
@@ -368,21 +394,23 @@ class ViewPostHandler(BlogHandler):
         comments = comments.filter(Comment.post_id == post_id)
         comments = comments.order(-Comment.created)
         comments = comments.fetch(5)
-        name = ""
-        author = ""
+        user_name = ""
+        user_is_author = False
         if self.user:
-            name = self.user.name
-            if post.author and name == post.author:
-                author = post.author
+            user_name = self.user.name
+            if post.author and user_name == post.author:
+                user_is_author = True
         self.render('viewpost.html', post=post,
-                    user_name=name, author=author,
+                    user_name=user_name, user_is_author=user_is_author,
                     comments=comments, **kw)
 
     def post(self):
+        """ Actions to post, edit, and update comments on the post.
+        """
         if self.user:
             user_name = self.user.name
             if self.request.get('comment'):
-                comment = self.request.get('comment')
+                comment = self.request.get('comment')  # comment content
                 author = user_name
                 post_id = self.request.get('post_id')
                 comment = Comment(author=author, post_id=post_id,
@@ -402,12 +430,13 @@ class ViewPostHandler(BlogHandler):
                             user_name=user_name, comment_id=comment_id)
             elif self.request.get('update'):
                 comment_id = int(self.request.get('update'))
-                comment_to_edit = Comment.get_by_id(comment_id)
-                edited_comment = self.request.get('updated-comment')
-                edited_comment = cgi.escape(edited_comment)
-                comment_to_edit.comment = edited_comment
-                comment_to_edit.put()
-                self.redirect('/blog/post?post_id=' + comment_to_edit.post_id)
+                comment_to_update = Comment.get_by_id(comment_id)
+                updated_comment_contents = self.request.get('updated-comment')
+                updated_comment_contents = cgi.escape(
+                    updated_comment_contents)
+                comment_to_update.comment = updated_comment_contents
+                comment_to_update.put()
+                self.redirect('/blog/post?post_id=' + comment_to_update.post_id)
             else:
                 self.get()
 
@@ -426,25 +455,6 @@ class EditCommentHandler(BlogHandler):
     def get(self):
         self.render('editcomment.html')
 
-    # def post(self):
-    #     if self.user:
-    #         user_name = self.user.name
-    #         if self.request.get('edit'):
-    #             comment_id = int(self.request.get('edit'))
-    #             comment_to_edit = Comment.get_by_id(comment_id)
-    #             self.render('editcomment.html', comment=comment_to_edit,
-    #                         user_name=user_name, comment_id=comment_id)
-    #             # self.write(comment_to_edit.comment)
-    #         elif self.request.get('update'):
-    #             comment_id = int(self.request.get('update'))
-    #             comment_to_edit = Comment.get_by_id(comment_id)
-    #             self.write(comment_to_edit.comment)
-    #             comment_to_edit.comment = self.request.get('comment')
-    #             comment_to_edit.put()
-    #             self.redirect('/blog/post?post_id=' + comment_to_edit.post_id)
-    #     else:
-    #         self.redirect('/blog/login')
-
 
 class EditPostHandler(BlogHandler):
         def get(self):
@@ -454,16 +464,16 @@ class EditPostHandler(BlogHandler):
             if self.request.get('edit'):
                 post_id = self.request.get('edit')
                 post = Post.get_by_id(int(post_id), parent=blog_key())
-                name = ""
+                user_name = ""
                 author = ""
                 if self.user:
-                    name = self.user.name
-                    if name == post.author:
-                        author = post.author
-                        post.content = post.content.replace('<br>', '')  # remove <br>s
+                    user_name = self.user.name
+                    if user_name == post.author:
+                        post.content = post.content.replace(
+                            '<br>', '')  # remove <br>s
                         self.render('editpost.html', post=post)
                     else:
-                        self.redirect('/blog')
+                        self.redirect('/blog')  # must be post author to edit
             elif self.request.get('delete'):
                 post_id = self.request.get('delete')
                 post = Post.get_by_id(int(post_id), parent=blog_key())
@@ -482,7 +492,7 @@ class EditPostHandler(BlogHandler):
                 post.subject = subject
                 post.content = content
                 post.put()
-                self.redirect('/blog')
+                self.redirect('/blog/post?post_id=' + post_id)
 
 app = webapp2.WSGIApplication([('/blog', MainPageHandler),
                                ('/blog/newpost', NewPostHandler),

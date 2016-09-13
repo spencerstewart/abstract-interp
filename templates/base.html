@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8">
     <title>{% block title %}{% endblock %}</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
+    <link rel="stylesheet" href="/static/bootstrap.min.css" media="screen">
     <link rel="stylesheet" href="/static/main.css" media="screen">
     <style media="screen">
     </style>
@@ -11,15 +12,15 @@
   <body>
     <div class="container">
       <div class="row">
-        <div class="col-md-10 col-md-offset-1" id="sidebar">
+        <div class="col-md-10 col-md-offset-1">
           <div class="header row">
             <div class="col-sm-4 title">
               <a href="/blog"><h1>Abstract Interpretations</h1></a>
             </div>
-            <div class="col-sm-4 sidebar-desc">
-              {% block sideheader %}{% endblock %}
+            <div class="col-sm-5 subtitle">
+              {% block subtitle %}{% endblock %}
             </div>
-            <div class="col-md-4 text-right sidebar-user">
+            <div class="col-md-3 text-right login">
               {% block sidebar_user %}{% endblock %}
               {% if user_name %}
                 Logged in as {{ user_name }} <br>
@@ -38,12 +39,17 @@
       </div>
       <div class="row">
         <div class="col-md-10 col-md-offset-1 content">
-          <div class="home error col-md-12 text-center">
+          {% if error %}
+          <div class=" error col-md-12 text-center">
             {{ error }}
           </div>
-          <div class="home msg col-md-12 text-center">
+          {% endif %}
+          {% if msg %}
+          <div class=" msg col-md-12 text-center">
             {{ msg }}
           </div>
+          {% endif %}
+
           {% block content %}
           {% endblock %}
         </div>

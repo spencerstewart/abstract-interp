@@ -394,8 +394,9 @@ class ViewPostHandler(BlogHandler):
             elif self.request.get('update'):
                 comment_id = int(self.request.get('update'))
                 comment_to_edit = Comment.get_by_id(comment_id)
-                self.write(comment_to_edit.comment)
-                comment_to_edit.comment = self.request.get('updated-comment')
+                edited_comment = self.request.get('updated-comment')
+                edited_comment = cgi.escape(edited_comment)
+                comment_to_edit.comment = edited_comment
                 comment_to_edit.put()
                 self.redirect('/blog/post?post_id=' + comment_to_edit.post_id)
             else:
@@ -465,6 +466,8 @@ class EditPostHandler(BlogHandler):
                 post = Post.get_by_id(int(post_id), parent=blog_key())
                 subject = self.request.get('subject')
                 content = self.request.get('content')
+                content = cgi.escape(content)
+                content = content.replace('\n', '<br>')
                 post.subject = subject
                 post.content = content
                 post.put()

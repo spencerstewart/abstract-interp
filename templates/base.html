@@ -16,15 +16,14 @@
             <div class="col-sm-4 title">
               <a href="/blog"><h1>Abstract Interpretations</h1></a>
             </div>
-            <div class="col-sm-8 sidebar-desc">
+            <div class="col-sm-4 sidebar-desc">
               {% block sideheader %}{% endblock %}
             </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12 text-right sidebar-user">
+            <div class="col-md-4 text-right sidebar-user">
               {% block sidebar_user %}{% endblock %}
               {% if user_name %}
-                Logged in as {{ user_name }} / <a href="/blog/logout">Logout.</a>
+                Logged in as {{ user_name }} <br>
+                <a href="/blog/logout">Logout</a>
               {% else %}
                 <p>
                   <a href="/blog/login">Login</a> |
@@ -32,6 +31,8 @@
                 </p>
               {% endif %}
             </div>
+          </div>
+          <div class="row">
           </div>
         </div>
       </div>

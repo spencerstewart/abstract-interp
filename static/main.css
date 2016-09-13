@@ -2,6 +2,10 @@ a,a:hover {
   color: inherit;
 }
 
+body {
+  background-color: #fafafa;
+}
+
 p {
   margin: 10px 0;
 }
@@ -64,7 +68,12 @@ h1 {
 }
 
 .post {
-  margin-bottom: 4em;
+  margin: 0 auto 4em;
+  max-width: 600px;
+  padding: 20px 0;
+  border-radius: 10px;
+  border: 1px solid #efefef;
+  background: #fff;
 }
 
 .post-header {

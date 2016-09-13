@@ -2,7 +2,7 @@
 
 {% block title %}Edit Comment{% endblock %}
 
-{% block sideheader %}
+{% block subtitle %}
 <div class="subject">
   Write something nice.
 </div>
@@ -16,7 +16,7 @@
         <label for="updated-comment">Edit comment:</label>
         <textarea class="form-control" name="updated-comment" rows="2" cols="40">{{ comment.comment }}</textarea>
       </div>
-      <div class="form-group post-button-area">
+      <div class="form-group post-comment-area">
         <button type="submit" name="update" class="btn" value="{{ comment_id }}">Update</button>
       </div>
     </form>

@@ -2,13 +2,13 @@
 
 {% block title %}Welcome, {{ user_name }}{% endblock %}
 
-{% block sideheader %}
-  <p class="subtitle">Welcome, {{ user_name }}!</p>
+{% block subtitle %}
+  <p>Welcome, {{ user_name }}!</p>
 {% endblock %}
 
 {% block content %}
 <div class="row body">
-    <div class="col-md-6 col-md-offset-3 post">
+    <div class="post welcome">
       <h3>Welcome to the blog</h3>
       <p>
         <a href="/blog/newpost">Click here to post something new.</a>

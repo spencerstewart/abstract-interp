@@ -1,3 +1,15 @@
+import cgi
+from BlogHandler import BlogHandler
+from functions import hasher
+from models.Post import Post
+from models.Comment import Comment
+from google.appengine.ext import ndb
+
+
+def blog_key(name='default'):
+    return ndb.Key('blogs', name)
+
+
 class ViewPostHandler(BlogHandler):
     """ Viewing an individual post.
     """

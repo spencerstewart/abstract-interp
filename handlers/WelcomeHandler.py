@@ -1,3 +1,4 @@
+from BlogHandler import BlogHandler
 
 
 class WelcomeHandler(BlogHandler):  # Only redirected here after signup

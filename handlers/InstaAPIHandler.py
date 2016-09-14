@@ -1,4 +1,12 @@
-class AuthHandler(BaseHandler):
+import urllib
+import json
+from BaseHandler import BaseHandler
+from models.Config import Config
+from google.appengine.ext import ndb
+from google.appengine.api import urlfetch
+
+
+class InstaAPIHandler(BaseHandler):
     """ Handles Instagram API authorization. """
 
     insta_creds = {'client_id': 'c00f51ef61ab4ac8ac543ae906bf4fde',

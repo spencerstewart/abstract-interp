@@ -1,3 +1,11 @@
+import cgi
+from BlogHandler import BlogHandler
+from models.Post import Post
+from google.appengine.ext import ndb
+
+
+def blog_key(name='default'):
+    return ndb.Key('blogs', name)
 
 
 class EditPostHandler(BlogHandler):

@@ -1,6 +1,10 @@
 from google.appengine.ext import ndb
 
 
+def blog_key(name='default'):
+    return ndb.Key('blogs', name)
+
+
 class Post(ndb.Model):
     subject = ndb.StringProperty(required=True)
     content = ndb.TextProperty(required=True)

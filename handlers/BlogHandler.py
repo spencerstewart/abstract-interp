@@ -1,9 +1,20 @@
 import webapp2
 from BaseHandler import BaseHandler
+from models.User import User
+from functions import hasher
+from google.appengine.ext import ndb
+
+
+# def blog_key(name='default'):
+#     return ndb.Key('blogs', name)
 
 
 class BlogHandler(BaseHandler):
     """ Contains convenience functions inherited by sub classes. """
+
+    # def __init__(self):  # sets default parent key
+    #     self.blog_key = ndb.Key('blogs', 'default')
+
 
     def set_secure_cookie(self, name, val):
         """ Sets a secure value for a cookie and adds to header. """

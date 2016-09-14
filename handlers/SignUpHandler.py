@@ -1,3 +1,15 @@
+import re
+from BlogHandler import BlogHandler
+from models.User import User
+from google.appengine.ext import ndb
+
+
+# Signup regex checks
+USER_RE = re.compile(r"^[a-zA-Z0-9_-]{3,20}$")
+PASS_RE = re.compile(r"^.{3,20}$")
+EMAIL_RE = re.compile(r"^[\S]+@[\S]+.[\S]+$")
+
+
 class SignupHandler(BlogHandler):
     def get(self):
         if self.user:

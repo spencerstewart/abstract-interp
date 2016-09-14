@@ -1,3 +1,12 @@
+from functions import hasher
+from google.appengine.ext import ndb
+
+
+def users_key(group='default'):
+    """ Defines default parent key for user entities. """
+    return ndb.Key('users', group)
+
+
 class User(ndb.Model):
     name = ndb.StringProperty(required=True)
     pw_hash = ndb.StringProperty(required=True)

@@ -1,3 +1,12 @@
+from BlogHandler import BlogHandler
+from models.Post import Post
+from google.appengine.ext import ndb
+
+
+def blog_key(name='default'):
+    return ndb.Key('blogs', name)
+
+
 class LikeHandler(BlogHandler):
     def like(self, post):
         post.likes.append(str(self.user.name))

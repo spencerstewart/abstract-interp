@@ -1,3 +1,8 @@
+from BlogHandler import BlogHandler
+from models.User import User
+from google.appengine.ext import ndb
+
+
 class LoginHandler(BlogHandler):
     def get(self):
         if self.user:

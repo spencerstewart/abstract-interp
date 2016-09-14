@@ -1,4 +1,5 @@
-import BlogHandler
+from BlogHandler import BlogHandler
+from models.Post import Post
 
 
 class MainPageHandler(BlogHandler):

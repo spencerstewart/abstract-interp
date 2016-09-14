@@ -9,9 +9,9 @@ import urllib2
 import logging
 import json
 import random
+from handlers.MainPageHandler import MainPageHandler
+
 import sys
-
-
 sys.path.append('/Users/spencer/Code/P3/blog-proj/handlers')
 
 # import MainPageHandler
@@ -274,21 +274,21 @@ class LogoutHandler(BlogHandler):
         self.redirect('/blog')
 
 
-class MainPageHandler(BlogHandler):
-    """ Homepage. """
-
-    def get(self, user_name=''):
-        error = ''
-        if self.request.get('error'):
-            error = self.request.get('error')
-        posts = Post.query()
-        posts = posts.order(-Post.created)
-        posts = posts.fetch(10)
-        name = ""
-        if self.user:
-            user_name = self.user.name
-        self.render('home.html', posts=posts,
-                    user_name=user_name, error=error)
+# class MainPageHandler(BlogHandler):
+#     """ Homepage. """
+#
+#     def get(self, user_name=''):
+#         error = ''
+#         if self.request.get('error'):
+#             error = self.request.get('error')
+#         posts = Post.query()
+#         posts = posts.order(-Post.created)
+#         posts = posts.fetch(10)
+#         name = ""
+#         if self.user:
+#             user_name = self.user.name
+#         self.render('home.html', posts=posts,
+#                     user_name=user_name, error=error)
 
 
 # Likes stuff

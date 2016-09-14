@@ -1,7 +1,8 @@
-import BaseHandler
+import webapp2
+from BaseHandler import BaseHandler
 
 
-class BlogHandler(BaseHandler.BaseHandler):
+class BlogHandler(BaseHandler):
     """ Contains convenience functions inherited by sub classes. """
 
     def set_secure_cookie(self, name, val):

@@ -9,6 +9,14 @@ import urllib2
 import logging
 import json
 import random
+import sys
+
+
+sys.path.append('/Users/spencer/Code/P3/blog-proj/handlers')
+
+# import MainPageHandler
+# from handlers.MainPageHandler import MainPageHandler
+# from handlers import *
 
 from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
@@ -28,8 +36,6 @@ class Config(ndb.Model):
 
 
 # Handlers
-
-
 class BaseHandler(webapp2.RequestHandler):
     """ Superclass that provides convenient helper functions. """
 

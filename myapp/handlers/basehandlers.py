@@ -1,12 +1,29 @@
 import webapp2
-from BaseHandler import BaseHandler
-from myapp.models import User
-from myapp.functions import hasher
+import os
+import jinja2
+
 from google.appengine.ext import ndb
 
+from myapp.models import User
+from myapp.functions import hasher
 
-# def blog_key(name='default'):
-#     return ndb.Key('blogs', name)
+template_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'templates')
+jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
+                               autoescape=True)
+
+
+class BaseHandler(webapp2.RequestHandler):
+    """ Superclass that provides convenient helper functions. """
+
+    def write(self, *a, **kw):
+        self.response.out.write(*a, **kw)
+
+    def render_str(self, template, **kw):
+        t = jinja_env.get_template(template)
+        return t.render(**kw)
+
+    def render(self, template, **kw):
+        self.write(self.render_str(template, **kw))
 
 
 class BlogHandler(BaseHandler):

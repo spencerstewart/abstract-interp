@@ -2,8 +2,13 @@ from google.appengine.ext import ndb
 from functions import hasher
 
 
-class BaseModel(ndb.Model):
-    created = ndb.DateTimeProperty(auto_now_add=True)
+def blog_key(name='default'):
+    return ndb.Key('blogs', name)
+
+
+def users_key(group='default'):
+    """ Defines default parent key for user entities. """
+    return ndb.Key('users', group)
 
 
 class Config(ndb.Model):
@@ -18,9 +23,6 @@ class Comment(ndb.Model):
     comment = ndb.StringProperty(required=True)
     created = ndb.DateTimeProperty(auto_now_add=True)
 
-# def blog_key(name='default'):
-#     return ndb.Key('blogs', name)
-
 
 class Post(ndb.Model):
     subject = ndb.StringProperty(required=True)
@@ -30,11 +32,6 @@ class Post(ndb.Model):
     like_count = ndb.IntegerProperty()  # Can do at query level
     likes = ndb.StringProperty(repeated=True)
     created = ndb.DateTimeProperty(auto_now_add=True)
-
-
-# def users_key(group='default'):
-#     """ Defines default parent key for user entities. """
-#     return ndb.Key('users', group)
 
 
 class User(ndb.Model):

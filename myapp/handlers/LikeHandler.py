@@ -1,4 +1,4 @@
-from bloghandler import BlogHandler
+from basehandlers import BlogHandler
 from myapp.models import Post
 from google.appengine.ext import ndb
 

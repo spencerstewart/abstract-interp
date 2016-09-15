@@ -2,7 +2,7 @@ import cgi
 
 from google.appengine.ext import ndb
 
-from bloghandler import BlogHandler
+from basehandlers import BlogHandler
 from myapp.models import Post
 
 

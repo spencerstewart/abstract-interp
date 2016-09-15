@@ -15,12 +15,10 @@ from myapp.handlers.newposthandler import NewPostHandler
 from myapp.handlers.editposthandler import EditPostHandler
 from myapp.handlers.viewposthandler import ViewPostHandler
 from myapp.handlers.LikeHandler import LikeHandler
-from myapp.handlers.SignupHandler import SignupHandler
-from myapp.handlers.LoginHandler import LoginHandler
-from myapp.handlers.LogoutHandler import LogoutHandler
-from myapp.handlers.WelcomeHandler import WelcomeHandler
-from myapp.handlers.InstaAPIHandler import InstaAPIHandler
-from myapp.handlers.EditCommentHandler import EditCommentHandler
+from myapp.handlers.signuphandler import SignupHandler, WelcomeHandler
+from myapp.handlers.loginhandler import LoginHandler, LogoutHandler
+from myapp.handlers.insta_api import InstaAPIHandler
+from myapp.handlers.commenthandler import EditCommentHandler
 
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
@@ -41,5 +39,5 @@ app = webapp2.WSGIApplication([('/', MainPageHandler),
                                ('/welcome', WelcomeHandler),
                                ('/logout', LogoutHandler),
                                ('/auth', InstaAPIHandler),
-                               ('/editcomment', EditCommentHandler)
+                               ('/comment', EditCommentHandler)
                                ], debug=True)

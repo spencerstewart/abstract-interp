@@ -2,7 +2,7 @@ import cgi
 
 from google.appengine.ext import ndb
 
-from bloghandler import BlogHandler
+from basehandlers import BlogHandler
 from insta_api import InstaAPI
 from myapp.functions import hasher
 from myapp.models import Post

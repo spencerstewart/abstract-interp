@@ -42,7 +42,7 @@
       <h4>Comments</h4>
       {% if user_name %}
       <div class="comment-form">
-        <form class="" method="post">
+        <form class="" method="post" action="/comment">
           <div class="form-group">
             <label for="comment">Post a comment:</label>
             <textarea class="form-control" name="comment" rows="2" cols="40"></textarea>
@@ -51,7 +51,7 @@
             <p class="small-info">
               Logged in as {{ user_name }}
             </p>
-            <button type="submit" name="post_comment" class="btn">Post</button>
+            <button type="submit" name="post_id" value="{{ post.key.id() }}" class="btn">Post</button>
           </div>
         </form>
       </div>
@@ -68,7 +68,8 @@
         </div>
         <div class="comment-meta">
           {% if user_name and user_name == comment.author %}
-          <form method="post">
+          <form method="post" action="/comment">
+            <input type="hidden" name="post_id" value="{{ post.key.id() }}">
             <button class="btn-no-style" type="submit" name="edit" value="{{ comment.key.id() }}">Edit</button>
             /
             <button class="btn-no-style" type="submit" name="delete" value="{{ comment.key.id() }}">Delete</button>

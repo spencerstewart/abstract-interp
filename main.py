@@ -10,10 +10,10 @@ import logging
 from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
 
-from myapp.handlers.MainPageHandler import MainPageHandler
-from myapp.handlers.NewPostHandler import NewPostHandler
-from myapp.handlers.EditPostHandler import EditPostHandler
-from myapp.handlers.ViewPostHandler import ViewPostHandler
+from myapp.handlers.mainpagehandler import MainPageHandler
+from myapp.handlers.newposthandler import NewPostHandler
+from myapp.handlers.editposthandler import EditPostHandler
+from myapp.handlers.viewposthandler import ViewPostHandler
 from myapp.handlers.LikeHandler import LikeHandler
 from myapp.handlers.SignupHandler import SignupHandler
 from myapp.handlers.LoginHandler import LoginHandler

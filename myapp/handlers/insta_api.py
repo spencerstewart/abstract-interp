@@ -2,7 +2,7 @@ import webapp2
 import urllib2
 import json
 import random
-from models.Config import Config
+from myapp.models import Config
 
 
 class InstaAPI(webapp2.RequestHandler):

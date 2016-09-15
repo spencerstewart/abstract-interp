@@ -1,9 +1,11 @@
 import cgi
-from BlogHandler import BlogHandler
-from functions import hasher
-from models.Post import Post
-from models.Comment import Comment
+
 from google.appengine.ext import ndb
+
+from bloghandler import BlogHandler
+from myapp.functions import hasher
+from myapp.models import Post
+from myapp.models import Comment
 
 
 def blog_key(name='default'):

@@ -1,5 +1,5 @@
-from BlogHandler import BlogHandler
-from models.Post import Post
+from bloghandler import BlogHandler
+from myapp.models import Post
 
 
 class MainPageHandler(BlogHandler):

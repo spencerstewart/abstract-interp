@@ -1,7 +1,9 @@
 import cgi
-from BlogHandler import BlogHandler
-from models.Post import Post
+
 from google.appengine.ext import ndb
+
+from bloghandler import BlogHandler
+from myapp.models import Post
 
 
 def blog_key(name='default'):

@@ -1,7 +1,7 @@
 import webapp2
 from BaseHandler import BaseHandler
-from models.User import User
-from functions import hasher
+from myapp.models import User
+from myapp.functions import hasher
 from google.appengine.ext import ndb
 
 

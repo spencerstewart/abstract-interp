@@ -1,4 +1,4 @@
-from BlogHandler import BlogHandler
+from bloghandler import BlogHandler
 
 
 class EditCommentHandler(BlogHandler):

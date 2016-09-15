@@ -1,9 +1,11 @@
 import cgi
-from BlogHandler import BlogHandler
-from InstaAPI import InstaAPI
-from functions import hasher
-from models.Post import Post
+
 from google.appengine.ext import ndb
+
+from bloghandler import BlogHandler
+from insta_api import InstaAPI
+from myapp.functions import hasher
+from myapp.models import Post
 
 
 def blog_key(name='default'):

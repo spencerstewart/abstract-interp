@@ -5,9 +5,7 @@ from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
 
 from myapp.handlers.mainpagehandler import MainPageHandler
-from myapp.handlers.newposthandler import NewPostHandler
-from myapp.handlers.editposthandler import EditPostHandler
-from myapp.handlers.viewposthandler import ViewPostHandler
+from myapp.handlers.posthandler import EditPostHandler, ViewPostHandler, NewPostHandler
 from myapp.handlers.likehandler import LikeHandler
 from myapp.handlers.signuphandler import SignupHandler, WelcomeHandler
 from myapp.handlers.loginhandler import LoginHandler, LogoutHandler

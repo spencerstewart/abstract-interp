@@ -30,8 +30,12 @@ class Post(ndb.Model):
     img_url = ndb.StringProperty(required=True)
     author = ndb.StringProperty(required=True)
     like_count = ndb.IntegerProperty()  # Can do at query level
-    likes = ndb.StringProperty(repeated=True)
+    # likes = ndb.StringProperty(repeated=True)
     created = ndb.DateTimeProperty(auto_now_add=True)
+
+
+class Like(ndb.Model):
+    liked_by = ndb.StringProperty(required=True)
 
 
 class User(ndb.Model):

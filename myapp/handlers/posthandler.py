@@ -6,8 +6,7 @@ from basehandlers import BlogHandler
 from loginhandler import login_required
 from insta_api import InstaAPI
 from myapp.functions import hasher
-from myapp.models import Post
-from myapp.models import Comment
+from myapp.models import Post, Comment, Like
 
 
 def blog_key(name='default'):

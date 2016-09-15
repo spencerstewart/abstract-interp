@@ -1,11 +1,5 @@
-import os
-import re
 import webapp2
-import jinja2
-import cgi
-import urllib
-import urllib2
-import logging
+
 
 from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
@@ -14,21 +8,14 @@ from myapp.handlers.mainpagehandler import MainPageHandler
 from myapp.handlers.newposthandler import NewPostHandler
 from myapp.handlers.editposthandler import EditPostHandler
 from myapp.handlers.viewposthandler import ViewPostHandler
-from myapp.handlers.LikeHandler import LikeHandler
+from myapp.handlers.likehandler import LikeHandler
 from myapp.handlers.signuphandler import SignupHandler, WelcomeHandler
 from myapp.handlers.loginhandler import LoginHandler, LogoutHandler
 from myapp.handlers.insta_api import InstaAPIHandler
 from myapp.handlers.commenthandler import EditCommentHandler
 
 
-template_dir = os.path.join(os.path.dirname(__file__), 'templates')
-jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
-                               autoescape=True)
-#
-# import sys
-# sys.path.append('/Users/spencer/Code/P3/blog-proj/handlers')
-
-
+# All handlers live in /myapp/handlers/module. See imports above.
 app = webapp2.WSGIApplication([('/', MainPageHandler),
                                ('/newpost', NewPostHandler),
                                ('/edit', EditPostHandler),

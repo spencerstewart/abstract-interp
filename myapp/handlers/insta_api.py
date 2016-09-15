@@ -47,9 +47,9 @@ class InstaAPIHandler(BaseHandler):
     """ Handles Instagram API authorization. """
 
     insta_creds = {'client_id': 'c00f51ef61ab4ac8ac543ae906bf4fde',
-                   'redirect_uri': 'http://localhost:8080/auth',  # CHANGE ME!!!
-                   # use https://abstract-interp.appspot.com//auth for prod
-                   # use http://localhost:8080//auth for dev
+                   'redirect_uri': 'https://abstract-interp.appspot.com/auth',  # CHANGE ME!!!
+                   # use https://abstract-interp.appspot.com/auth for prod
+                   # use http://localhost:8080/auth for dev
                    'client_secret': 'e3852dc82ace453bb30d2df7287e148b',
                    'grant_type': 'authorization_code'}
 

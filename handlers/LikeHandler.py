@@ -31,12 +31,12 @@ class LikeHandler(BlogHandler):
             if not self.user.name == post.author:  # Must not be author
                 if not self.already_liked(post):
                     self.like(post)
-                    self.redirect('/blog')
+                    self.redirect('/')
                 else:
                     error = "You already liked that item."
-                    self.redirect('/blog?error=' + error)
+                    self.redirect('/?error=' + error)
             else:
                 error = "You can't like your own posts."
-                self.redirect('/blog?error=' + error)
+                self.redirect('/?error=' + error)
         else:
-            self.redirect('/blog/login')
+            self.redirect('/login')

@@ -5,7 +5,7 @@
 
 {% block subtitle %}
     <p>
-      Receive an abstract photo.<br><a href="/blog/newpost">
+      Receive an abstract photo.<br><a href="/newpost">
       Share a new interpretation. </a>
     </p>
 {% endblock %}
@@ -16,14 +16,14 @@
     {% for post in posts %}
       <div class="row post">
         <div class="col-md-12">
-          <a href="/blog/post?post_id={{ post.key.id() }}">
+          <a href="/post?post_id={{ post.key.id() }}">
             <div class="insta_img">
               <img class="img-responsive" src="{{ post.img_url }}" alt="An abstract Instagram photo" />
             </div>
           </a>
         </div>
         <div class="col-md-8 col-md-offset-2">
-          <a href="/blog/post?post_id={{ post.key.id() }}">
+          <a href="/post?post_id={{ post.key.id() }}">
             <div class="post-header">
               <div class="subject">
                 {{ post.subject }}
@@ -35,7 +35,7 @@
             {{ post.content | safe }}
           </div>
           <div class="post-footer">
-            <form class="" action="/blog/like" method="post">
+            <form class="" action="/like" method="post">
               <button class="btn btn-primary" type="submit" name="liked" value="{{ post.key.id() }}">Like</button>
               <span>{{ post.like_count }} Likes</span>
             </form>

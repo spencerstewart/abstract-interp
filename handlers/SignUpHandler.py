@@ -13,7 +13,7 @@ EMAIL_RE = re.compile(r"^[\S]+@[\S]+.[\S]+$")
 class SignupHandler(BlogHandler):
     def get(self):
         if self.user:
-            self.redirect('/blog')
+            self.redirect('/')
         else:
             self.render('signup.html')
 
@@ -47,4 +47,4 @@ class SignupHandler(BlogHandler):
             u = User.register(username, password, email)
             u.put()
             self.login(u)
-            self.redirect('/blog/welcome')
+            self.redirect('/welcome')

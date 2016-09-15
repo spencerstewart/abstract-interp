@@ -14,7 +14,7 @@ class NewPostHandler(BlogHandler):
     def get(self):
         img_url = InstaAPI.get_rand_image_url()  # returns false on error
         if not img_url:
-            self.redirect('/blog/auth')
+            self.redirect('/auth')
             return
         img_url_hash = hasher.make_img_url_hash(img_url)
         name = ""
@@ -43,7 +43,7 @@ class NewPostHandler(BlogHandler):
                         author=author, img_url=img_url, like_count=0, likes=[])
             post_key = post.put()
             post_id = post_key.id()
-            self.redirect('/blog/post?post_id=' + str(post_id))
+            self.redirect('/post?post_id=' + str(post_id))
 
         # Erroneous form data
         else:

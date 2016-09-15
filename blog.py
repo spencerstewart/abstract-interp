@@ -30,15 +30,15 @@ jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),
 # sys.path.append('/Users/spencer/Code/P3/blog-proj/handlers')
 
 
-app = webapp2.WSGIApplication([('/blog', MainPageHandler),
-                               ('/blog/newpost', NewPostHandler),
-                               ('/blog/edit', EditPostHandler),
-                               ('/blog/post.*', ViewPostHandler),
-                               ('/blog/like', LikeHandler),
-                               ('/blog/signup', SignupHandler),
-                               ('/blog/login', LoginHandler),
-                               ('/blog/welcome', WelcomeHandler),
-                               ('/blog/logout', LogoutHandler),
-                               ('/blog/auth', InstaAPIHandler),
-                               ('/blog/editcomment', EditCommentHandler)
+app = webapp2.WSGIApplication([('/', MainPageHandler),
+                               ('/newpost', NewPostHandler),
+                               ('/edit', EditPostHandler),
+                               ('/post.*', ViewPostHandler),
+                               ('/like', LikeHandler),
+                               ('/signup', SignupHandler),
+                               ('/login', LoginHandler),
+                               ('/welcome', WelcomeHandler),
+                               ('/logout', LogoutHandler),
+                               ('/auth', InstaAPIHandler),
+                               ('/editcomment', EditCommentHandler)
                                ], debug=True)

@@ -23,14 +23,14 @@
     <div class="post-body">
       {{ post.content | safe }}
       {% if user_is_author %}
-      <form method="post" action="/blog/edit" class="author-options text-center">
+      <form method="post" action="/edit" class="author-options text-center">
         <button class="btn" type="submit" name="edit" value="{{ post.key.id() }}">Edit</button>
         <button class="btn btn-danger" type="submit" name="delete" value="{{ post.key.id() }}">Delete</button>
       </form>
       {% endif %}
     </div>
     <div class="post-footer">
-      <form class="" action="/blog/like" method="post">
+      <form class="" action="/like" method="post">
         <button class="btn btn-primary" type="submit" name="liked" value="{{ post.key.id() }}">Like</button>
         <span>{{ post.like_count }} Likes</span>
       </form>
@@ -57,7 +57,7 @@
       </div>
       {% else %}
       <p>
-        <a href="/blog/login">Login to post a comment.</a>
+        <a href="/login">Login to post a comment.</a>
       </p>
       {% endif %}
 

@@ -6,7 +6,7 @@ from google.appengine.ext import ndb
 class LoginHandler(BlogHandler):
     def get(self):
         if self.user:
-            self.redirect('/blog')
+            self.redirect('/')
         else:
             self.render('login.html')
 
@@ -17,7 +17,7 @@ class LoginHandler(BlogHandler):
             u = User.login(username, password)
             if u:
                 self.login(u)
-                self.redirect('/blog')
+                self.redirect('/')
         errors = {'login_error': 'Incorrect username/password combo',
                   'username': username}
         self.render('login.html', **errors)

@@ -15,7 +15,7 @@
         <div class="col-md-10 col-md-offset-1">
           <div class="header row">
             <div class="col-sm-4 title">
-              <a href="/blog"><h1>Abstract Interpretations</h1></a>
+              <a href="/"><h1>Abstract Interpretations</h1></a>
             </div>
             <div class="col-sm-5 subtitle">
               {% block subtitle %}{% endblock %}
@@ -24,11 +24,11 @@
               {% block sidebar_user %}{% endblock %}
               {% if user_name %}
                 Logged in as {{ user_name }} <br>
-                <a href="/blog/logout">Logout</a>
+                <a href="/logout">Logout</a>
               {% else %}
                 <p>
-                  <a href="/blog/login">Login</a> |
-                  <a href="/blog/signup">Sign up</a>
+                  <a href="/login">Login</a> |
+                  <a href="/signup">Sign up</a>
                 </p>
               {% endif %}
             </div>

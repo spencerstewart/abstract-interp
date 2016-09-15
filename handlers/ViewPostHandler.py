@@ -42,13 +42,13 @@ class ViewPostHandler(BlogHandler):
                 comment = Comment(author=author, post_id=post_id,
                                   comment=comment)
                 comment.put()
-                self.redirect('/blog/post?post_id=' + post_id)
+                self.redirect('/post?post_id=' + post_id)
             elif self.request.get('delete'):
                 post_id = self.request.get('post_id')
                 comment_id = int(self.request.get('delete'))
                 comment_to_delete = Comment.get_by_id(comment_id)
                 comment_to_delete.key.delete()
-                self.redirect('/blog/post?post_id=' + post_id)
+                self.redirect('/post?post_id=' + post_id)
             elif self.request.get('edit'):
                 comment_id = int(self.request.get('edit'))
                 comment_to_edit = Comment.get_by_id(comment_id)
@@ -62,9 +62,9 @@ class ViewPostHandler(BlogHandler):
                     updated_comment_contents)
                 comment_to_update.comment = updated_comment_contents
                 comment_to_update.put()
-                self.redirect('/blog/post?post_id=' + comment_to_update.post_id)
+                self.redirect('/post?post_id=' + comment_to_update.post_id)
             else:
                 self.get()
 
         else:
-            self.redirect('/blog/login')
+            self.redirect('/login')

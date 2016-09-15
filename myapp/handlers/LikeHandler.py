@@ -1,6 +1,7 @@
 from google.appengine.ext import ndb
 
 from basehandlers import BlogHandler
+from loginhandler import login_required
 from myapp.models import Post
 
 
@@ -24,20 +25,18 @@ class LikeHandler(BlogHandler):
         else:
             return False
 
+    @login_required
     def post(self):
         """ Form action for likes. """
-        if self.user:  # Must be logged in to like a post.
-            post_id = self.request.get('liked')
-            post = Post.get_by_id(int(post_id), parent=blog_key())
-            if not self.user.name == post.author:  # Must not be author
-                if not self.already_liked(post):
-                    self.like(post)
-                    self.redirect('/')
-                else:
-                    error = "You already liked that item."
-                    self.redirect('/?error=' + error)
+        post_id = self.request.get('liked')
+        post = Post.get_by_id(int(post_id), parent=blog_key())
+        if not self.user.name == post.author:  # Must not be author
+            if not self.already_liked(post):
+                self.like(post)
+                self.redirect('/')
             else:
-                error = "You can't like your own posts."
+                error = "You already liked that item."
                 self.redirect('/?error=' + error)
         else:
-            self.redirect('/login')
+            error = "You can't like your own posts."
+            self.redirect('/?error=' + error)

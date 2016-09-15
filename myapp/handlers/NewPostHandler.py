@@ -3,6 +3,7 @@ import cgi
 from google.appengine.ext import ndb
 
 from basehandlers import BlogHandler
+from loginhandler import login_required
 from insta_api import InstaAPI
 from myapp.functions import hasher
 from myapp.models import Post
@@ -13,6 +14,7 @@ def blog_key(name='default'):
 
 
 class NewPostHandler(BlogHandler):
+    @login_required
     def get(self):
         img_url = InstaAPI.get_rand_image_url()  # returns false on error
         if not img_url:
@@ -25,6 +27,7 @@ class NewPostHandler(BlogHandler):
         self.render('newpost.html', img_url=img_url, user_name=name,
                     img_url_hash=img_url_hash)
 
+    @login_required
     def post(self):
         subject = self.request.get('subject')
         content = self.request.get('content')

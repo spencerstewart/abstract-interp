@@ -32,6 +32,11 @@ class BlogHandler(BaseHandler):
     # def __init__(self):  # sets default parent key
     #     self.blog_key = ndb.Key('blogs', 'default')
 
+    def initialize(self, *a, **kw):
+        """ Loads logged-in user object. """
+        webapp2.RequestHandler.initialize(self, *a, **kw)
+        uid = self.read_secure_cookie('user_id')
+        self.user = uid and User.by_id(int(uid))
 
     def set_secure_cookie(self, name, val):
         """ Sets a secure value for a cookie and adds to header. """
@@ -50,9 +55,3 @@ class BlogHandler(BaseHandler):
 
     def logout(self):
         self.response.headers.add_header('Set-Cookie', 'user_id=; Path=/')
-
-    def initialize(self, *a, **kw):
-        """ Loads logged-in user object. """
-        webapp2.RequestHandler.initialize(self, *a, **kw)
-        uid = self.read_secure_cookie('user_id')
-        self.user = uid and User.by_id(int(uid))

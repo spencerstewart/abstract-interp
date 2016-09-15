@@ -3,15 +3,14 @@ from google.appengine.ext import ndb
 from basehandlers import BlogHandler
 from myapp.models import User
 
-
-class LoginFns(BlogHandler):
-    def login_required(f):
-        def login_check(*a, **kw):
-            if self.user:
-                return f(*a, **kw)
-            else:
-                return redirect('/login')
-        return login_check
+# EPIC decorator function that took me forever to figure out.
+def login_required(f):
+    def wrapper(self, *a, **kw):
+        if self.user:
+            return f(self, *a, **kw)
+        else:
+            return self.redirect('/login')
+    return wrapper
 
 
 class LoginHandler(BlogHandler):

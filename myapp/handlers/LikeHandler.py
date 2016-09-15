@@ -1,5 +1,5 @@
 from bloghandler import BlogHandler
-from models.Post import Post
+from myapp.models import Post
 from google.appengine.ext import ndb
 
 

@@ -1,6 +1,6 @@
 import re
 from bloghandler import BlogHandler
-from models.User import User
+from myapp.models import User
 from google.appengine.ext import ndb
 
 

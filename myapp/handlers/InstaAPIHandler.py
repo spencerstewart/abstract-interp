@@ -1,7 +1,7 @@
 import urllib
 import json
 from BaseHandler import BaseHandler
-from models.Config import Config
+from myapp.models import Config
 from google.appengine.ext import ndb
 from google.appengine.api import urlfetch
 

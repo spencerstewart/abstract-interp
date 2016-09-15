@@ -1,6 +1,7 @@
+from google.appengine.ext import ndb
+
 from basehandlers import BlogHandler
 from myapp.models import Post
-from google.appengine.ext import ndb
 
 
 def blog_key(name='default'):

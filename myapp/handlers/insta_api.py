@@ -3,6 +3,7 @@ import urllib2
 import urllib
 import json
 import random
+import logging
 
 from google.appengine.ext import ndb
 from google.appengine.api import urlfetch
@@ -83,7 +84,7 @@ class InstaAPIHandler(BaseHandler):
                 parsed_json = json.loads(result.content)
                 config = Config(access_token=parsed_json['access_token'])
                 config.put()  # Save access_token in db
-                self.redirect('/')
+                self.render('auth_link.html', success=True)
             except urlfetch.Error:
                 logging.exception('Caught exception fetching url')
         else:

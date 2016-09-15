@@ -12,11 +12,19 @@
 <div class="row body">
     <div class="col-md-6 col-md-offset-3">
       <div class="">
+        {% if success %}
+        <a href="/">
+          <button class="btn btn-success" style="font-size:3em;">
+            Authorized! Go home!
+          </button>
+        </a>
+        {% else %}
         <a href="https://api.instagram.com/oauth/authorize/?client_id={{client_id}}&redirect_uri={{redirect_uri}}&response_type=code">
           <button class="btn btn-primary" style="font-size:3em;">
             Authorize it. Right. Now.
           </button>
         </a>
+        {% endif %}
 
         <p>
           This app uses a sandboxed Instagram API to pull images for blog inspiration.

@@ -4,6 +4,16 @@ from basehandlers import BlogHandler
 from myapp.models import User
 
 
+class LoginFns(BlogHandler):
+    def login_required(f):
+        def login_check(*a, **kw):
+            if self.user:
+                return f(*a, **kw)
+            else:
+                return redirect('/login')
+        return login_check
+
+
 class LoginHandler(BlogHandler):
     def get(self):
         if self.user:

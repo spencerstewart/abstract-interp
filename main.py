@@ -2,25 +2,26 @@ import os
 import re
 import webapp2
 import jinja2
-import hasher
 import cgi
 import urllib
 import urllib2
 import logging
-import hasher
-from handlers.MainPageHandler import MainPageHandler
-from handlers.NewPostHandler import NewPostHandler
-from handlers.EditPostHandler import EditPostHandler
-from handlers.ViewPostHandler import ViewPostHandler
-from handlers.LikeHandler import LikeHandler
-from handlers.SignupHandler import SignupHandler
-from handlers.LoginHandler import LoginHandler
-from handlers.LogoutHandler import LogoutHandler
-from handlers.WelcomeHandler import WelcomeHandler
-from handlers.InstaAPIHandler import InstaAPIHandler
-from handlers.EditCommentHandler import EditCommentHandler
+
 from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
+
+from myapp.handlers.MainPageHandler import MainPageHandler
+from myapp.handlers.NewPostHandler import NewPostHandler
+from myapp.handlers.EditPostHandler import EditPostHandler
+from myapp.handlers.ViewPostHandler import ViewPostHandler
+from myapp.handlers.LikeHandler import LikeHandler
+from myapp.handlers.SignupHandler import SignupHandler
+from myapp.handlers.LoginHandler import LoginHandler
+from myapp.handlers.LogoutHandler import LogoutHandler
+from myapp.handlers.WelcomeHandler import WelcomeHandler
+from myapp.handlers.InstaAPIHandler import InstaAPIHandler
+from myapp.handlers.EditCommentHandler import EditCommentHandler
+
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir),

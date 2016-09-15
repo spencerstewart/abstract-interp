@@ -23,14 +23,14 @@
     <div class="post-body">
       {{ post.content | safe }}
       {% if user_is_author %}
-      <form method="post" action="/blog/edit" class="author-options text-center">
+      <form method="post" action="/edit" class="author-options text-center">
         <button class="btn" type="submit" name="edit" value="{{ post.key.id() }}">Edit</button>
         <button class="btn btn-danger" type="submit" name="delete" value="{{ post.key.id() }}">Delete</button>
       </form>
       {% endif %}
     </div>
     <div class="post-footer">
-      <form class="" action="/blog/like" method="post">
+      <form class="" action="/like" method="post">
         <button class="btn btn-primary" type="submit" name="liked" value="{{ post.key.id() }}">Like</button>
         <span>{{ post.like_count }} Likes</span>
       </form>
@@ -42,7 +42,7 @@
       <h4>Comments</h4>
       {% if user_name %}
       <div class="comment-form">
-        <form class="" method="post">
+        <form class="" method="post" action="/comment">
           <div class="form-group">
             <label for="comment">Post a comment:</label>
             <textarea class="form-control" name="comment" rows="2" cols="40"></textarea>
@@ -51,13 +51,13 @@
             <p class="small-info">
               Logged in as {{ user_name }}
             </p>
-            <button type="submit" name="post_comment" class="btn">Post</button>
+            <button type="submit" name="post_id" value="{{ post.key.id() }}" class="btn">Post</button>
           </div>
         </form>
       </div>
       {% else %}
       <p>
-        <a href="/blog/login">Login to post a comment.</a>
+        <a href="/login">Login to post a comment.</a>
       </p>
       {% endif %}
 
@@ -68,7 +68,8 @@
         </div>
         <div class="comment-meta">
           {% if user_name and user_name == comment.author %}
-          <form method="post">
+          <form method="post" action="/comment">
+            <input type="hidden" name="post_id" value="{{ post.key.id() }}">
             <button class="btn-no-style" type="submit" name="edit" value="{{ comment.key.id() }}">Edit</button>
             /
             <button class="btn-no-style" type="submit" name="delete" value="{{ comment.key.id() }}">Delete</button>

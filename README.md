@@ -27,9 +27,3 @@ Particularly, you should be in the same directory as the app.yaml file (this sto
 Once you've navigated on Terminal to the correct directory, start the local dev environment by typing:
 `dev_appserver.py .`
 Don't forget to include the period at the end!
-
-Mac OS will ask if it is okay for Python to accept connections. Say yes, then navigate to localhost:8080/blog to see the blog in action!
-
-
-## Instagram API
-The Instagram API key I have is currently in sandboxed mode, so only Instagram accounts associated with API key can authenticate this app. I've already authenticated the sample installation (linked above), but other installations would not be authenticated unless I associated their Instagram account to my API key. Booo restrictive APIs...

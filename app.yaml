@@ -1,5 +1,5 @@
 runtime: python27
-version: v01
+version: v02
 application: abstract-interp
 api_version: 1
 threadsafe: true

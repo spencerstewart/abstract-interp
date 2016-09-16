@@ -3,6 +3,7 @@ from google.appengine.ext import ndb
 from basehandlers import BlogHandler
 from loginhandler import login_required
 from myapp.models import Post
+from myapp.models import Like
 
 
 def blog_key(name='default'):
@@ -11,25 +12,26 @@ def blog_key(name='default'):
 
 class LikeHandler(BlogHandler):
     def like(self, post):
-        post.likes.append(str(self.user.name))
-        post.like_count = len(post.likes)
-        post.put()
+        like = Like(liked_by=self.user.name, parent=post.key)
+        like.put()
+        post.like_count = Like.query(ancestor=post.key).count()
+        post.put()  # Update likes
 
     def already_liked(self, post):
-        if post.likes:
-            who_liked = post.likes
-            if self.user.name in who_liked:
-                return True
-            else:
-                return False
-        else:
+        likes = Like.query(ancestor=post.key)
+        if likes:
+            for like in likes:
+                if like.liked_by == self.user.name:
+                    return True
             return False
+        else:
+            return True
 
     @login_required
     def post(self):
         """ Form action for likes. """
         post_id = self.request.get('liked')
-        post = Post.get_by_id(int(post_id), parent=blog_key())
+        post = Post.by_id(int(post_id))
         if not self.user.name == post.author:  # Must not be author
             if not self.already_liked(post):
                 self.like(post)

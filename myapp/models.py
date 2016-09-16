@@ -19,7 +19,7 @@ class Config(ndb.Model):
 
 class Comment(ndb.Model):
     author = ndb.StringProperty(required=True)
-    post_id = ndb.StringProperty(required=True)
+    # post_id = ndb.StringProperty(required=True)
     comment = ndb.StringProperty(required=True)
     created = ndb.DateTimeProperty(auto_now_add=True)
 
@@ -30,8 +30,16 @@ class Post(ndb.Model):
     img_url = ndb.StringProperty(required=True)
     author = ndb.StringProperty(required=True)
     like_count = ndb.IntegerProperty()  # Can do at query level
-    likes = ndb.StringProperty(repeated=True)
+    # likes = ndb.StringProperty(repeated=True)
     created = ndb.DateTimeProperty(auto_now_add=True)
+
+    @classmethod
+    def by_id(cls, uid):
+        return cls.get_by_id(uid, parent=blog_key())
+
+
+class Like(ndb.Model):
+    liked_by = ndb.StringProperty(required=True)
 
 
 class User(ndb.Model):

@@ -45,7 +45,7 @@ class NewPostHandler(BlogHandler):
             content = content.replace('\n', '<br>')
             author = str(self.user.name)
             post = Post(parent=blog_key(), subject=subject, content=content,
-                        author=author, img_url=img_url, like_count=0, likes=[])
+                        author=author, img_url=img_url, like_count=0)
             post_key = post.put()
             post_id = post_key.id()
             self.redirect('/post?post_id=' + str(post_id))

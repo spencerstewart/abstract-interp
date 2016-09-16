@@ -44,9 +44,9 @@ class CommentHandler(BlogHandler):
         elif self.request.get('edit'):
             post_id = self.request.get('post_id')
             post = Post.by_id(int(post_id))
-            if self.user.name == post.author:  # Verify user is author
-                comment_id = int(self.request.get('edit'))
-                comment_to_edit = Comment.get_by_id(comment_id, parent=post.key)
+            comment_id = int(self.request.get('edit'))
+            comment_to_edit = Comment.get_by_id(comment_id, parent=post.key)
+            if self.user.name == comment_to_edit.author:  # Verify user is author
                 self.render('editcomment.html', comment=comment_to_edit,
                             user_name=user_name, comment_id=comment_id,
                             post_id=post_id)

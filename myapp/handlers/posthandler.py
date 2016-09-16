@@ -69,9 +69,8 @@ class ViewPostHandler(BlogHandler):
 
     def get(self, **kw):
         post_id = self.request.get('post_id')
-        post = Post.get_by_id(int(post_id), parent=blog_key())
-        comments = Comment.query()
-        comments = comments.filter(Comment.post_id == post_id)
+        post = Post.by_id(int(post_id))
+        comments = Comment.query(ancestor=post.key)
         comments = comments.order(-Comment.created)
         comments = comments.fetch(5)
         user_name = ""
@@ -91,27 +90,32 @@ class EditPostHandler(BlogHandler):
 
     @login_required
     def post(self):
+        # This POST option to edit is only exposed if logged-in user is author
+        # See template viewpost.html
         if self.request.get('edit'):
             post_id = self.request.get('edit')
-            post = Post.get_by_id(int(post_id), parent=blog_key())
+            post = Post.by_id(int(post_id))
             user_name = ""
             author = ""
-            if self.user:
-                user_name = self.user.name
-                if user_name == post.author:
-                    post.content = post.content.replace(
-                        '<br>', '')  # remove <br>s
-                    self.render('editpost.html', post=post)
-                else:
-                    self.redirect('/')  # must be post author to edit
+            user_name = self.user.name
+            if user_name == post.author:  # Double checks user is author
+                post.content = post.content.replace(
+                    '<br>', '')  # remove <br>s
+                self.render('editpost.html', post=post)
+            else:
+                self.redirect('/')
+        # This POST option to delete is only exposed if logged-in user is author
+        # See template viewpost.html
         elif self.request.get('delete'):
             post_id = self.request.get('delete')
             post = Post.get_by_id(int(post_id), parent=blog_key())
             post.key.delete()
             self.redirect('/')
+        # POST request to cancel editing (from editpost.html)
         elif self.request.get('cancel'):
             post_id = self.request.get('cancel')
             self.redirect('/post?post_id=' + post_id)
+        # POST request to update post (from editpost.html)
         elif self.request.get('update'):
             post_id = self.request.get('update')
             post = Post.get_by_id(int(post_id), parent=blog_key())

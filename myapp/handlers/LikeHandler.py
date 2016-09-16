@@ -31,7 +31,7 @@ class LikeHandler(BlogHandler):
     def post(self):
         """ Form action for likes. """
         post_id = self.request.get('liked')
-        post = Post.get_by_id(int(post_id), parent=blog_key())
+        post = Post.by_id(int(post_id))
         if not self.user.name == post.author:  # Must not be author
             if not self.already_liked(post):
                 self.like(post)

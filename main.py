@@ -10,7 +10,7 @@ from myapp.handlers.likehandler import LikeHandler
 from myapp.handlers.signuphandler import SignupHandler, WelcomeHandler
 from myapp.handlers.loginhandler import LoginHandler, LogoutHandler
 from myapp.handlers.insta_api import InstaAPIHandler
-from myapp.handlers.commenthandler import EditCommentHandler
+from myapp.handlers.commenthandler import CommentHandler
 
 
 # All handlers live in /myapp/handlers/module. See imports above.
@@ -24,5 +24,5 @@ app = webapp2.WSGIApplication([('/', MainPageHandler),
                                ('/welcome', WelcomeHandler),
                                ('/logout', LogoutHandler),
                                ('/auth', InstaAPIHandler),
-                               ('/comment', EditCommentHandler)
+                               ('/comment', CommentHandler)
                                ], debug=True)

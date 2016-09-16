@@ -3,7 +3,7 @@
 
 Multi-user blog that provides an image to interpret. Udacity Full Stack ND Project.
 
-See an example installation here: [https://abstract-interp.appspot.com/blog](https://abstract-interp.appspot.com/blog)
+See an example installation here: [https://abstract-interp.appspot.com/](https://abstract-interp.appspot.com/)
 
 Based on Google App Engine and Webapp2.
 
